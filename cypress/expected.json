@@ -1,4 +1,5 @@
 {
   "works": "pass",
-  "fails": "fail"
+  "fails": "fail",
+  "fails c": "fail"
 }

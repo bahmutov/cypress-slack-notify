@@ -6,6 +6,10 @@
 
 Enable verbose log messages by setting an environment variable `DEBUG=cypress-slack-notify`
 
+## Examples
+
+See [bahmutov/cypress-slack-example](https://github.com/bahmutov/cypress-slack-example)
+
 ## Small print
 
 Author: Gleb Bahmutov &lt;gleb.bahmutov@gmail.com&gt; &copy; 2022

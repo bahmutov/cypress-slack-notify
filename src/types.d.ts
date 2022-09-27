@@ -15,3 +15,16 @@ type SlackNotificationTarget = string
 export type NotificationConfiguration = {
   [string]: SlackNotificationTarget
 }
+
+/**
+ * Describes when the plugin should send the Slack notifications.
+ * For example, the user might want to only notify when there is a Dashboard run,
+ * or a specific dashboard tag(s).
+ */
+export type NotifyConditions = {
+  /**
+   * Only send Slack notifications if the run is being recorded
+   * on Cypress Dashboard. True by default.
+   */
+  whenRecordedOnDashboard: boolean
+}

@@ -1,3 +1,6 @@
+/// <reference types="cypress" />
+// @ts-check
+
 const debug = require('debug')('cypress-slack-notify')
 const { WebClient } = require('@slack/web-api')
 
@@ -93,10 +96,13 @@ async function postCypressSlackResult(
         usersStore = {}
         try {
           const userResult = await web.users.list()
-          userResult.members.forEach((u) => {
-            // console.log(u)
-            usersStore[u.name] = u.id
-          })
+          if (userResult.members) {
+            userResult.members.forEach((u) => {
+              if (u.name) {
+                usersStore[u.name] = u.id
+              }
+            })
+          }
         } catch (e) {
           console.error('Could not fetch the users list')
           console.error(
@@ -144,24 +150,47 @@ async function postCypressSlackResult(
   }
 }
 
+/** @type { import("./types").NotifyConditions } */
+const defaultNotifyConditions = {
+  whenRecordedOnDashboard: true,
+}
+
 /**
  * Registers the cypres-slack-notify plugin. The plugin will send Slack messages
  * for each failed spec file based on the notification configuration object.
  * @param {Cypress.PluginEvents} on Pass the "on" argument to let the plugin listen to Cypress events
  * @param { import("./types").NotificationConfiguration } notificationConfiguration
+ * @param { import("./types").NotifyConditions } notifyConditions
  */
-function registerCypressSlackNotify(on, notificationConfiguration) {
+function registerCypressSlackNotify(
+  on,
+  notificationConfiguration,
+  notifyConditions,
+) {
   if (!notificationConfiguration) {
     throw new Error('Missing cypress-slack-notify notification configuration')
+  }
+
+  if (!notifyConditions) {
+    // default notification conditions
+    notifyConditions = defaultNotifyConditions
+    debug('using default notify conditions %o', notifyConditions)
   }
 
   // remember the Cypress dashboard run URL and tags if any
   let runDashboardTag
   let runDashboardUrl
+  let recordingOnDashboard = false
 
   on('before:run', (runDetails) => {
     runDashboardUrl = runDetails.runUrl
     runDashboardTag = runDetails.tag
+    recordingOnDashboard = Boolean(runDashboardUrl)
+    debug('before run %o', {
+      recordingOnDashboard,
+      runDashboardUrl,
+      runDashboardTag,
+    })
   })
 
   on('after:spec', async (spec, results) => {
@@ -171,6 +200,34 @@ function registerCypressSlackNotify(on, notificationConfiguration) {
         debug('Test failures in %s', spec.relative)
         // TODO handle both an unexpected error
         // and the specific number of failed tests
+
+        if (typeof notifyConditions.whenRecordedOnDashboard === 'boolean') {
+          debug(
+            'notifyConditions.whenRecordedOnDashboard',
+            notifyConditions.whenRecordedOnDashboard,
+          )
+
+          if (
+            notifyConditions.whenRecordedOnDashboard === true &&
+            !recordingOnDashboard
+          ) {
+            debug(
+              'not recording on Cypress Dashboard, skip Slack notifications',
+            )
+            return
+          }
+
+          if (
+            notifyConditions.whenRecordedOnDashboard === false &&
+            recordingOnDashboard
+          ) {
+            debug(
+              'recording on Cypress Dashboard, but the user wants to skip Slack notifications',
+            )
+            return
+          }
+        }
+
         await postCypressSlackResult(
           notificationConfiguration,
           spec,

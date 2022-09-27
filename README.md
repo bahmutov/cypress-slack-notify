@@ -35,7 +35,7 @@ const notificationConfiguration = {
 // only when running on CI and recording the test runs
 // and using certain run tags
 const notifyWhen = {
-  whenRecordedOnDashboard: true,
+  whenRecordingOnDashboard: true,
   whenRecordingDashboardTag: ['notify'],
 }
 

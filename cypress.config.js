@@ -1,3 +1,4 @@
+// @ts-check
 const { defineConfig } = require('cypress')
 
 /** @type { import("./src/types").NotificationConfiguration } */
@@ -12,7 +13,7 @@ const notificationConfiguration = {
 
 /** @type { import("./src/types").NotifyConditions } */
 const notifyWhen = {
-  whenRecordedOnDashboard: true,
+  whenRecordingOnDashboard: true,
   whenRecordingDashboardTag: ['notify'],
 }
 

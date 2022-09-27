@@ -152,7 +152,7 @@ async function postCypressSlackResult(
 
 /** @type { import("./types").NotifyConditions } */
 const defaultNotifyConditions = {
-  whenRecordedOnDashboard: true,
+  whenRecordingOnDashboard: true,
 }
 
 /**
@@ -201,13 +201,13 @@ function registerCypressSlackNotify(
         // TODO handle both an unexpected error
         // and the specific number of failed tests
 
-        if (typeof notifyConditions.whenRecordedOnDashboard === 'boolean') {
+        if (typeof notifyConditions.whenRecordingOnDashboard === 'boolean') {
           debug(
-            'notifyConditions.whenRecordedOnDashboard',
-            notifyConditions.whenRecordedOnDashboard,
+            'notifyConditions.whenRecordingOnDashboard',
+            notifyConditions.whenRecordingOnDashboard,
           )
 
-          if (notifyConditions.whenRecordedOnDashboard === true) {
+          if (notifyConditions.whenRecordingOnDashboard === true) {
             if (!recordingOnDashboard) {
               debug(
                 'not recording on Cypress Dashboard, skip Slack notifications',
@@ -252,7 +252,7 @@ function registerCypressSlackNotify(
           }
 
           if (
-            notifyConditions.whenRecordedOnDashboard === false &&
+            notifyConditions.whenRecordingOnDashboard === false &&
             recordingOnDashboard
           ) {
             debug(

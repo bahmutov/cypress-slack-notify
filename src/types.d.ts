@@ -26,7 +26,7 @@ export type NotifyConditions = {
    * Only send Slack notifications if the run is being recorded
    * on Cypress Dashboard. True by default.
    */
-  whenRecordedOnDashboard: boolean
+  whenRecordingOnDashboard: boolean
   /**
    * If recording on Cypress Dashboard, send notifications only if the recording
    * has this tag(s)

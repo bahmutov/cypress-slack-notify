@@ -96,6 +96,7 @@ You can post a message about every failed spec into a single channel by using a 
 
 ```js
 // cypress.config.js
+// https://github.com/bahmutov/cypress-slack-notify
 const registerSlackNotify = require('cypress-slack-notify')
 ...
 setupNodeEvents(on, config) {
@@ -103,6 +104,29 @@ setupNodeEvents(on, config) {
   // on each failed spec
   registerSlackNotify(on, '#sanity-tests', {
     whenRecordingDashboardTag: ['sanity'],
+  })
+})
+```
+
+## Multiple registrations
+
+You can register this plugin multiple times and direct messages based on the recorded Dashboard tags.
+
+```js
+// cypress.config.js
+// https://github.com/bahmutov/cypress-slack-notify
+const registerSlackNotify = require('cypress-slack-notify')
+...
+setupNodeEvents(on, config) {
+  // any recorded run tagged "sanity" should notify #sanity-tests channel
+  // on each failed spec
+  registerSlackNotify(on, '#sanity-tests', {
+    whenRecordingDashboardTag: ['sanity'],
+  })
+  // any recorded run tagged "user" should notify #user-tests channel
+  // on each failed spec
+  registerSlackNotify(on, '#user-tests', {
+    whenRecordingDashboardTag: ['user'],
   })
 })
 ```

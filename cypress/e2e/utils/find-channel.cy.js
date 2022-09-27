@@ -1,7 +1,7 @@
-// @ts-check
-const { defineConfig } = require('cypress')
+/// <reference types="cypress" />
+const { findChannelToNotify } = require('../../../src/utils')
 
-/** @type { import("./src/types").NotificationConfiguration } */
+/** @type { import("../../../src/types").NotificationConfiguration } */
 const notificationConfiguration = {
   // if this spec fails, post a message to the channel
   'spec-a.cy.js': '#cypress-slack-notify',
@@ -17,21 +17,18 @@ const notificationConfiguration = {
   '**/sub/*.cy.js': '#cypress-slack-notify-minimatch',
 }
 
-/** @type { import("./src/types").NotifyConditions } */
-const notifyWhen = {
-  whenRecordingOnDashboard: true,
-  whenRecordingDashboardTag: ['notify'],
-}
+it('finds the right channel by the filename end', () => {
+  const channel = findChannelToNotify(
+    notificationConfiguration,
+    'cypress/e2e/spec-b.cy.js',
+  )
+  expect(channel).to.equal('#cypress-slack-notify @gleb.bahmutov')
+})
 
-module.exports = defineConfig({
-  projectId: 'avzi1n',
-  video: false,
-  e2e: {
-    // baseUrl, etc
-    supportFile: false,
-    fixturesFolder: false,
-    setupNodeEvents(on, config) {
-      require('./src/index')(on, notificationConfiguration, notifyWhen)
-    },
-  },
+it('finds the right channel by minimatch', () => {
+  const channel = findChannelToNotify(
+    notificationConfiguration,
+    'cypress/e2e/sub/spec.cy.js',
+  )
+  expect(channel).to.equal('#cypress-slack-notify-minimatch')
 })

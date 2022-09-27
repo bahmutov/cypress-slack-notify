@@ -3,9 +3,9 @@ const { defineConfig } = require('cypress')
 /** @type { import("./src/types").NotificationConfiguration } */
 const notificationConfiguration = {
   // if this spec fails, post a message to the channel
-  'spec-a.js': '#cypress-slack-notify',
+  'spec-a.cy.js': '#cypress-slack-notify',
   // if this spec fails, post a message and notify Gleb
-  'spec-b.js': '#cypress-slack-notify @gleb.bahmutov',
+  'spec-b.cy.js': '#cypress-slack-notify @gleb.bahmutov',
 }
 
 module.exports = defineConfig({

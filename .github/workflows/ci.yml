@@ -15,6 +15,7 @@ jobs:
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          DEBUG: cypress-slack-notify
 
   release:
     needs: [test]

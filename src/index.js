@@ -9,6 +9,7 @@ function findChannelToNotify(
     return failedSpecRelativeFilename.endsWith(ch)
   })
   if (!spec) {
+    debug('no notification for spec %s', failedSpecRelativeFilename)
     return
   }
   return notificationConfiguration[spec]
@@ -129,7 +130,11 @@ async function postCypressSlackResult(
       channel,
     })
     if (result.ok) {
-      console.log('posted message to channel "%s"', channel)
+      console.log(
+        'cypress-slack-notify posted spec %s message to channel "%s"',
+        spec.relative,
+        channel,
+      )
     } else {
       console.error('could not post the test results to "%s"', channel)
       console.error(result)

@@ -1,4 +1,4 @@
-# cypress-slack-notify ![cypress version](https://img.shields.io/badge/cypress-10.3.1-brightgreen)
+# cypress-slack-notify ![cypress version](https://img.shields.io/badge/cypress-10.8.0-brightgreen)
 
 > Post messages in Slack channels when specific Cypress tests and specs fail
 

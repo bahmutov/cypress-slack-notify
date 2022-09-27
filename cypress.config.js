@@ -7,6 +7,7 @@ const notificationConfiguration = {
 }
 
 module.exports = defineConfig({
+  projectId: 'avzi1n',
   e2e: {
     // baseUrl, etc
     supportFile: false,

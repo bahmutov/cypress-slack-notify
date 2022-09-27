@@ -62,11 +62,16 @@ async function postCypressSlackResult(
         runInfo.runDashboardUrl + '/overview?reviewViewBy=FAILED'
       text += `\nCypress Dashboard URL: ${overviewFailedUrl}`
     }
-    if (runInfo.runDashboardTag) {
-      text += `\nRun tags: ${runInfo.runDashboardTag
-        .map((s) => '*' + s + '*')
-        .join(', ')}`
+    if (Array.isArray(runInfo.runDashboardTags) && runInfo.runDashboardTags) {
+      debug('run info has dashboard tag %o', runInfo.runDashboardTags)
+      const s = runInfo.runDashboardTags
+        .map((tag) => '*' + tag + '*')
+        .join(', ')
+      text += `\nRun tags: ${s}`
+    } else {
+      debug('run info has no dashboard tags')
     }
+
     if (people && people.length) {
       if (!usersStore) {
         usersStore = {}
@@ -107,6 +112,8 @@ async function postCypressSlackResult(
     }
 
     debug('posting Slack message to %s for spec %s', channel, spec.relative)
+    debug(text)
+
     const result = await web.chat.postMessage({
       text,
       channel,
@@ -131,6 +138,8 @@ const defaultNotifyConditions = {
   whenRecordingOnDashboard: true,
 }
 
+const allNotificationConfigurations = []
+
 /**
  * Registers the cypres-slack-notify plugin. The plugin will send Slack messages
  * for each failed spec file based on the notification configuration object.
@@ -149,7 +158,7 @@ function registerCypressSlackNotify(
 
   if (!notifyConditions) {
     // default notification conditions
-    notifyConditions = defaultNotifyConditions
+    notifyConditions = { ...defaultNotifyConditions }
     debug('using default notify conditions %o', notifyConditions)
   }
   const mergedNotifyConditions = {
@@ -158,6 +167,12 @@ function registerCypressSlackNotify(
   }
   debug('merged notify conditions %o', mergedNotifyConditions)
   notifyConditions = mergedNotifyConditions
+
+  // support multiple registrations by storing each condition
+  allNotificationConfigurations.push({
+    notificationConfiguration,
+    notifyConditions,
+  })
 
   // remember the Cypress dashboard run URL and tags if any
   let runDashboardTags
@@ -183,87 +198,97 @@ function registerCypressSlackNotify(
         // TODO handle both an unexpected error
         // and the specific number of failed tests
 
-        if (typeof notifyConditions.whenISaySo === 'function') {
-          debug('using whenISayso predicate function')
-          if (
-            !notifyConditions.whenISaySo({ runDashboardUrl, runDashboardTags })
-          ) {
-            debug('whenISaySo returned false, skip notifications')
-            return
-          }
-        } else {
-          if (typeof notifyConditions.whenRecordingOnDashboard === 'boolean') {
-            debug(
-              'notifyConditions.whenRecordingOnDashboard',
-              notifyConditions.whenRecordingOnDashboard,
-            )
+        // notify each Slack channel (there could be multiple registrations)
+        for await (const c of allNotificationConfigurations) {
+          const { notificationConfiguration, notifyConditions } = c
 
-            if (notifyConditions.whenRecordingOnDashboard === true) {
-              if (!recordingOnDashboard) {
+          if (typeof notifyConditions.whenISaySo === 'function') {
+            debug('using whenISaySo predicate function')
+            if (
+              !notifyConditions.whenISaySo({
+                runDashboardUrl,
+                runDashboardTags,
+              })
+            ) {
+              debug('whenISaySo returned false, skip notifications')
+              return
+            }
+          } else {
+            if (
+              typeof notifyConditions.whenRecordingOnDashboard === 'boolean'
+            ) {
+              debug(
+                'notifyConditions.whenRecordingOnDashboard',
+                notifyConditions.whenRecordingOnDashboard,
+              )
+
+              if (notifyConditions.whenRecordingOnDashboard === true) {
+                if (!recordingOnDashboard) {
+                  debug(
+                    'not recording on Cypress Dashboard, skip Slack notifications',
+                  )
+                  return
+                }
+
+                if (
+                  typeof notifyConditions.whenRecordingDashboardTag === 'string'
+                ) {
+                  notifyConditions.whenRecordingDashboardTag = [
+                    notifyConditions.whenRecordingDashboardTag,
+                  ]
+                }
+
+                if (
+                  Array.isArray(notifyConditions.whenRecordingDashboardTag) &&
+                  notifyConditions.whenRecordingDashboardTag.length
+                ) {
+                  if (!runDashboardTags || !runDashboardTags.length) {
+                    debug(
+                      'run does not have any tags, need %o to report',
+                      notifyConditions.whenRecordingDashboardTag,
+                    )
+                    return
+                  }
+
+                  debug('recorded run tags %o', runDashboardTags)
+                  const hasMatchingTag =
+                    notifyConditions.whenRecordingDashboardTag.some((tag) =>
+                      runDashboardTags.includes(tag),
+                    )
+                  if (!hasMatchingTag) {
+                    debug(
+                      'user does not need to Slack notify about tags %o, only %o',
+                      runDashboardTags,
+                      notifyConditions.whenRecordingDashboardTag,
+                    )
+                    return
+                  }
+                }
+              }
+
+              if (
+                notifyConditions.whenRecordingOnDashboard === false &&
+                recordingOnDashboard
+              ) {
                 debug(
-                  'not recording on Cypress Dashboard, skip Slack notifications',
+                  'recording on Cypress Dashboard, but the user wants to skip Slack notifications',
                 )
                 return
               }
-
-              if (
-                typeof notifyConditions.whenRecordingDashboardTag === 'string'
-              ) {
-                notifyConditions.whenRecordingDashboardTag = [
-                  notifyConditions.whenRecordingDashboardTag,
-                ]
-              }
-
-              if (
-                Array.isArray(notifyConditions.whenRecordingDashboardTag) &&
-                notifyConditions.whenRecordingDashboardTag.length
-              ) {
-                if (!runDashboardTags || !runDashboardTags.length) {
-                  debug(
-                    'run does not have any tags, need %o to report',
-                    notifyConditions.whenRecordingDashboardTag,
-                  )
-                  return
-                }
-
-                debug('recorded run tags %o', runDashboardTags)
-                const hasMatchingTag =
-                  notifyConditions.whenRecordingDashboardTag.some((tag) =>
-                    runDashboardTags.includes(tag),
-                  )
-                if (!hasMatchingTag) {
-                  debug(
-                    'user does not need to Slack notify about tags %o, only %o',
-                    runDashboardTags,
-                    notifyConditions.whenRecordingDashboardTag,
-                  )
-                  return
-                }
-              }
-            }
-
-            if (
-              notifyConditions.whenRecordingOnDashboard === false &&
-              recordingOnDashboard
-            ) {
-              debug(
-                'recording on Cypress Dashboard, but the user wants to skip Slack notifications',
-              )
-              return
             }
           }
-        }
 
-        await postCypressSlackResult(
-          notificationConfiguration,
-          spec,
-          results.stats.failures,
-          {
-            runDashboardUrl,
-            runDashboardTags,
-          },
-        )
-        debug('after postCypressSlackResult')
+          await postCypressSlackResult(
+            notificationConfiguration,
+            spec,
+            results.stats.failures,
+            {
+              runDashboardUrl,
+              runDashboardTags,
+            },
+          )
+          debug('after postCypressSlackResult')
+        }
       }
     } catch (e) {
       console.error('problem after spec')
@@ -272,5 +297,4 @@ function registerCypressSlackNotify(
   })
 }
 
-// module.exports = { registerCypressSlackNotify, postCypressSlackResult }
 module.exports = registerCypressSlackNotify

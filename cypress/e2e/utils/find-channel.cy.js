@@ -32,3 +32,11 @@ it('finds the right channel by minimatch', () => {
   )
   expect(channel).to.equal('#cypress-slack-notify-minimatch')
 })
+
+it('has single target shortcut', () => {
+  const channel = findChannelToNotify(
+    '#my-channel',
+    'cypress/e2e/sub/spec.cy.js',
+  )
+  expect(channel).to.equal('#my-channel')
+})

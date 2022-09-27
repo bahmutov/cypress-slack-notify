@@ -90,6 +90,23 @@ const notificationConfiguration = {
 
 In the above situation, any failed test in the spec like `cypress/e2e/sub/home.cy.js` will be posted to `#two`.
 
+## Single channel shortcut
+
+You can post a message about every failed spec into a single channel by using a config shortcut
+
+```js
+// cypress.config.js
+const registerSlackNotify = require('cypress-slack-notify')
+...
+setupNodeEvents(on, config) {
+  // any recorded run tagged "sanity" should notify #sanity-tests channel
+  // on each failed spec
+  registerSlackNotify(on, '#sanity-tests', {
+    whenRecordingDashboardTag: ['sanity'],
+  })
+})
+```
+
 ## Debugging
 
 Enable verbose log messages by setting an environment variable `DEBUG=cypress-slack-notify`

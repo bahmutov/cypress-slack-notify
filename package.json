@@ -1,0 +1,23 @@
+{
+  "name": "cypress-slack-notify",
+  "version": "1.0.0",
+  "description": "Post messages in Slack channels when specific Cypress tests and specs fail",
+  "main": "index.js",
+  "scripts": {
+    "test": "cypress run"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bahmutov/cypress-slack-notify.git"
+  },
+  "keywords": [
+    "cypress-plugin",
+    "slack"
+  ],
+  "author": "Gleb Bahmutov <gleb.bahmutov@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bahmutov/cypress-slack-notify/issues"
+  },
+  "homepage": "https://github.com/bahmutov/cypress-slack-notify#readme"
+}

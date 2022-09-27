@@ -7,6 +7,14 @@ function findChannelToNotify(
   notificationConfiguration,
   failedSpecRelativeFilename,
 ) {
+  if (typeof notificationConfiguration === 'string') {
+    debug(
+      'notification config is the single target "%s"',
+      notificationConfiguration,
+    )
+    return notificationConfiguration
+  }
+
   const spec = Object.keys(notificationConfiguration).find((ch) => {
     return (
       failedSpecRelativeFilename.endsWith(ch) ||

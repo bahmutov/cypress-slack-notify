@@ -11,10 +11,15 @@ type SlackNotificationTarget = string
  *  // post a message in "#test-results" channel
  *  // if a test inside "auth.cy.js" spec fails
  *  { 'auth.cy.js': '#test-results' }
+ * Shortcut: use a single notification channel to notify
+ * on every failing spec
+ * @example '#test-results'
  */
-export type NotificationConfiguration = {
-  [string]: SlackNotificationTarget
-}
+export type NotificationConfiguration =
+  | {
+      [string]: SlackNotificationTarget
+    }
+  | SlackNotificationTarget
 
 export type RunInfo = {
   runDashboardUrl?: string
@@ -31,7 +36,7 @@ export type NotifyConditions = {
    * Only send Slack notifications if the run is being recorded
    * on Cypress Dashboard. True by default.
    */
-  whenRecordingOnDashboard: boolean
+  whenRecordingOnDashboard?: boolean
   /**
    * If recording on Cypress Dashboard, send notifications only if the recording
    * has this tag(s)

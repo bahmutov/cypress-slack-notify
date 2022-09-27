@@ -9,7 +9,8 @@
   "scripts": {
     "test": "cypress run",
     "badges": "npx -p dependency-version-badge update-badge cypress",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "multiple": "cypress run --config-file cypress.multiple.config.js"
   },
   "repository": {
     "type": "git",

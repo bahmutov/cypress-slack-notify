@@ -152,6 +152,12 @@ function registerCypressSlackNotify(
     notifyConditions = defaultNotifyConditions
     debug('using default notify conditions %o', notifyConditions)
   }
+  const mergedNotifyConditions = {
+    ...defaultNotifyConditions,
+    ...notifyConditions,
+  }
+  debug('merged notify conditions %o', mergedNotifyConditions)
+  notifyConditions = mergedNotifyConditions
 
   // remember the Cypress dashboard run URL and tags if any
   let runDashboardTags

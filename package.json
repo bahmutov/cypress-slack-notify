@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@slack/web-api": "^6.7.2",
-    "debug": "^4.3.4"
+    "debug": "^4.3.4",
+    "minimatch": "^5.1.0"
   }
 }

@@ -69,6 +69,27 @@ const notifyWhen = {
 require('cypress-slack-notify')(on, notificationConfiguration, notifyWhen)
 ```
 
+## Minimatch
+
+You can list spec files by the filename / end of the filepath. You can also rely on [minimatch](https://github.com/isaacs/minimatch) to find the target Slack channel.
+
+```js
+const notificationConfiguration = {
+  // equivalents
+  'spec-a.cy.js': '#one',
+  'e2e/spec-a.cy.js': '#one',
+  'cypress/e2e/spec-a.cy.js': '#one',
+  // use minimatch with spec paths
+  // https://github.com/isaacs/minimatch
+  // In this case, any failed specs directly in the "sub" folder
+  // will post notification to '#cypress-slack-notify-minimatch'
+  // https://github.com/isaacs/minimatch
+  '**/sub/*.cy.js': '#two',
+}
+```
+
+In the above situation, any failed test in the spec like `cypress/e2e/sub/home.cy.js` will be posted to `#two`.
+
 ## Debugging
 
 Enable verbose log messages by setting an environment variable `DEBUG=cypress-slack-notify`

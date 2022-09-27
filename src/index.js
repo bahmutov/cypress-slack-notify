@@ -3,31 +3,7 @@
 
 const debug = require('debug')('cypress-slack-notify')
 const { WebClient } = require('@slack/web-api')
-
-function findChannelToNotify(
-  notificationConfiguration,
-  failedSpecRelativeFilename,
-) {
-  const spec = Object.keys(notificationConfiguration).find((ch) => {
-    return failedSpecRelativeFilename.endsWith(ch)
-  })
-  if (!spec) {
-    debug('no notification for spec %s', failedSpecRelativeFilename)
-    return
-  }
-  return notificationConfiguration[spec]
-}
-
-// s could be something like "#channel @user1 @user2"
-function getChannelAndPeople(s) {
-  if (typeof s !== 'string') {
-    throw new Error(`expected a string, got "${s}"`)
-  }
-  const parts = s.split(' ')
-  const channel = parts.find((s) => s.startsWith('#'))
-  const people = parts.filter((s) => s.startsWith('@'))
-  return { channel, people }
-}
+const { findChannelToNotify, getChannelAndPeople } = require('./utils')
 
 const getTestPluralForm = (n) => (n === 1 ? 'test' : 'tests')
 

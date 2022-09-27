@@ -4,7 +4,7 @@
 
 ![Notify Slack messages](./images/notify.png)
 
-To use this plugin, you will need to get yourself a `SLACK_TOKEN` by making a new Slack App. This app needs a bot token with the scope `"chat:write"` to post messages. If you want to tag specific users, you will need to give the app `"users:read"` too. For details, see [Slack API docs](https://api.slack.com/methods/chat.postMessage).
+To use this plugin, you will need to get yourself a `SLACK_TOKEN` by making a new Slack App. This app needs a bot token with the scope `"chat:write"` to post messages. If you want to tag specific users, you will need to give the app `"users:read"` too. For details, see [Slack API docs](https://api.slack.com/methods/chat.postMessage). You will need to invite the registered and installed Slack App to each channel you would like to post messages by this plugin.
 
 ## Install
 

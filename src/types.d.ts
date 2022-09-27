@@ -27,4 +27,9 @@ export type NotifyConditions = {
    * on Cypress Dashboard. True by default.
    */
   whenRecordedOnDashboard: boolean
+  /**
+   * If recording on Cypress Dashboard, send notifications only if the recording
+   * has this tag(s)
+   */
+  whenRecordingDashboardTag?: string | string[]
 }

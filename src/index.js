@@ -178,18 +178,18 @@ function registerCypressSlackNotify(
   }
 
   // remember the Cypress dashboard run URL and tags if any
-  let runDashboardTag
+  let runDashboardTags
   let runDashboardUrl
   let recordingOnDashboard = false
 
   on('before:run', (runDetails) => {
     runDashboardUrl = runDetails.runUrl
-    runDashboardTag = runDetails.tag
+    runDashboardTags = runDetails.tag
     recordingOnDashboard = Boolean(runDashboardUrl)
     debug('before run %o', {
       recordingOnDashboard,
       runDashboardUrl,
-      runDashboardTag,
+      runDashboardTags,
     })
   })
 
@@ -207,14 +207,48 @@ function registerCypressSlackNotify(
             notifyConditions.whenRecordedOnDashboard,
           )
 
-          if (
-            notifyConditions.whenRecordedOnDashboard === true &&
-            !recordingOnDashboard
-          ) {
-            debug(
-              'not recording on Cypress Dashboard, skip Slack notifications',
-            )
-            return
+          if (notifyConditions.whenRecordedOnDashboard === true) {
+            if (!recordingOnDashboard) {
+              debug(
+                'not recording on Cypress Dashboard, skip Slack notifications',
+              )
+              return
+            }
+
+            if (
+              typeof notifyConditions.whenRecordingDashboardTag === 'string'
+            ) {
+              notifyConditions.whenRecordingDashboardTag = [
+                notifyConditions.whenRecordingDashboardTag,
+              ]
+            }
+
+            if (
+              Array.isArray(notifyConditions.whenRecordingDashboardTag) &&
+              notifyConditions.whenRecordingDashboardTag.length
+            ) {
+              if (!runDashboardTags || !runDashboardTags.length) {
+                debug(
+                  'run does not have any tags, need %o to report',
+                  notifyConditions.whenRecordingDashboardTag,
+                )
+                return
+              }
+
+              debug('recorded run tags %o', runDashboardTags)
+              const hasMatchingTag =
+                notifyConditions.whenRecordingDashboardTag.some((tag) =>
+                  runDashboardTags.includes(tag),
+                )
+              if (!hasMatchingTag) {
+                debug(
+                  'user does not need to Slack notify about tags %o, only %o',
+                  runDashboardTags,
+                  notifyConditions.whenRecordingDashboardTag,
+                )
+                return
+              }
+            }
           }
 
           if (
@@ -234,7 +268,7 @@ function registerCypressSlackNotify(
           results.stats.failures,
           {
             runDashboardUrl,
-            runDashboardTag,
+            runDashboardTags,
           },
         )
         debug('after postCypressSlackResult')

@@ -10,6 +10,12 @@ const notificationConfiguration = {
   'spec-c.cy.js': '#cypress-slack-notify',
 }
 
+/** @type { import("./src/types").NotifyConditions } */
+const notifyWhen = {
+  whenRecordedOnDashboard: true,
+  whenRecordingDashboardTag: ['notify'],
+}
+
 module.exports = defineConfig({
   projectId: 'avzi1n',
   video: false,
@@ -18,7 +24,7 @@ module.exports = defineConfig({
     supportFile: false,
     fixturesFolder: false,
     setupNodeEvents(on, config) {
-      require('./src/index')(on, notificationConfiguration)
+      require('./src/index')(on, notificationConfiguration, notifyWhen)
     },
   },
 })

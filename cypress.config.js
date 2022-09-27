@@ -8,6 +8,7 @@ const notificationConfiguration = {
 
 module.exports = defineConfig({
   projectId: 'avzi1n',
+  video: false,
   e2e: {
     // baseUrl, etc
     supportFile: false,

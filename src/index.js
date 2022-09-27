@@ -16,6 +16,9 @@ function findChannelToNotify(
 
 // s could be something like "#channel @user1 @user2"
 function getChannelAndPeople(s) {
+  if (typeof s !== 'string') {
+    throw new Error(`expected a string, got "${s}"`)
+  }
   const parts = s.split(' ')
   const channel = parts.find((s) => s.startsWith('#'))
   const people = parts.filter((s) => s.startsWith('@'))
@@ -61,6 +64,11 @@ async function postCypressSlackResult(
   // note: you need to invite the app to each channel
   // before it can post messages to that channel
   const notify = findChannelToNotify(notificationConfiguration, spec.relative)
+  if (!notify) {
+    debug('no notify for failed spec %s', spec.relative)
+    return
+  }
+
   const { channel, people } = getChannelAndPeople(notify)
   if (channel) {
     console.error('need to notify channel "%s"', channel)

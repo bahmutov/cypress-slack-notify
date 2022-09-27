@@ -16,6 +16,11 @@ export type NotificationConfiguration = {
   [string]: SlackNotificationTarget
 }
 
+export type RunInfo = {
+  runDashboardUrl?: string
+  runDashboardTags?: string[]
+}
+
 /**
  * Describes when the plugin should send the Slack notifications.
  * For example, the user might want to only notify when there is a Dashboard run,
@@ -32,4 +37,9 @@ export type NotifyConditions = {
    * has this tag(s)
    */
   whenRecordingDashboardTag?: string | string[]
+  /**
+   * A predicate you can use to implement custom logic to decide
+   * if the current Cypress run should send Slack notifications for failed specs.
+   */
+  whenISaySo?: (runInfo: RunInfo) => boolean
 }

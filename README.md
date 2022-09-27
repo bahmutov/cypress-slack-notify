@@ -50,6 +50,23 @@ module.exports = defineConfig({
 })
 ```
 
+## whenISaySo
+
+You can provide your own synchronous predicate function to decide if this plugin should send Slack notifications on failed specs.
+
+```js
+const notifyWhen = {
+  whenISaySo({ runDashboardUrl, runDashboardTags }) {
+    // look at the provided arguments, or any logic like process.env.CI
+    // etc to determine if you want to send Slack notifications
+    return true | false
+  },
+}
+
+// https://github.com/bahmutov/cypress-slack-notify
+require('cypress-slack-notify')(on, notificationConfiguration, notifyWhen)
+```
+
 ## Debugging
 
 Enable verbose log messages by setting an environment variable `DEBUG=cypress-slack-notify`

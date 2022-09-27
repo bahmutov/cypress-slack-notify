@@ -6,6 +6,8 @@ const notificationConfiguration = {
   'spec-a.cy.js': '#cypress-slack-notify',
   // if this spec fails, post a message and notify Gleb
   'spec-b.cy.js': '#cypress-slack-notify @gleb.bahmutov',
+  // if this spec fails, just post a message
+  'spec-c.cy.js': '#cypress-slack-notify',
 }
 
 module.exports = defineConfig({

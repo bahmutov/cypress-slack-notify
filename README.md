@@ -2,6 +2,10 @@
 
 > Post messages in Slack channels when specific Cypress tests and specs fail
 
+## Debugging
+
+Enable verbose log messages by setting an environment variable `DEBUG=cypress-slack-notify`
+
 ## Small print
 
 Author: Gleb Bahmutov &lt;gleb.bahmutov@gmail.com&gt; &copy; 2022

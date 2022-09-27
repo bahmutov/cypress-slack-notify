@@ -1,3 +1,4 @@
+const debug = require('debug')('cypress-slack-notify')
 const { WebClient } = require('@slack/web-api')
 
 function findChannelToNotify(
@@ -30,6 +31,7 @@ let usersStore
  * Posts a Slack message to the specific channels if notification
  * for the failed spec tests is configured.
  * @param { import("./types").NotificationConfiguration } notificationConfiguration
+ * @param {Cypress.Spec} spec The current spec file object
  * @param {number} failedN Number of failed tests
  */
 async function postCypressSlackResult(
@@ -39,6 +41,12 @@ async function postCypressSlackResult(
   runInfo,
 ) {
   if (!process.env.SLACK_TOKEN) {
+    debug('no SLACK_TOKEN')
+    return
+  }
+
+  if (!failedN) {
+    debug('no tests failed in spec %s', spec.relative)
     return
   }
 
@@ -107,6 +115,7 @@ async function postCypressSlackResult(
       }
     }
 
+    debug('posting Slack message to %s for spec %s', channel, spec.relative)
     const result = await web.chat.postMessage({
       text,
       channel,
@@ -129,6 +138,11 @@ async function postCypressSlackResult(
  * @param { import("./types").NotificationConfiguration } notificationConfiguration
  */
 function registerCypressSlackNotify(on, notificationConfiguration) {
+  if (!notificationConfiguration) {
+    throw new Error('Missing cypress-slack-notify notification configuration')
+  }
+
+  // remember the Cypress dashboard run URL and tags if any
   let runDashboardTag
   let runDashboardUrl
 
@@ -141,7 +155,7 @@ function registerCypressSlackNotify(on, notificationConfiguration) {
     try {
       // error - unexpected crash, the tests could not run
       if (results.error || results.stats.failures) {
-        console.error('Test failures in %s', spec.relative)
+        debug('Test failures in %s', spec.relative)
         // TODO handle both an unexpected error
         // and the specific number of failed tests
         await postCypressSlackResult(
@@ -153,7 +167,7 @@ function registerCypressSlackNotify(on, notificationConfiguration) {
             runDashboardTag,
           },
         )
-        console.log('after postCypressSlackResult')
+        debug('after postCypressSlackResult')
       }
     } catch (e) {
       console.error('problem after spec')
@@ -162,4 +176,5 @@ function registerCypressSlackNotify(on, notificationConfiguration) {
   })
 }
 
-module.exports = { registerCypressSlackNotify, postCypressSlackResult }
+// module.exports = { registerCypressSlackNotify, postCypressSlackResult }
+module.exports = registerCypressSlackNotify

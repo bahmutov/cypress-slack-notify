@@ -72,7 +72,7 @@ async function postCypressSlackResult(
 
   const { channel, people } = getChannelAndPeople(notify)
   if (channel) {
-    console.error('need to notify channel "%s"', channel)
+    console.error('cypress-slack-notify: need to notify channel "%s"', channel)
     let text = `🚨 ${failedN} Cypress ${getTestPluralForm(
       failedN,
     )} failed in spec *${spec.relative}*`

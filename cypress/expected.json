@@ -1,6 +1,6 @@
 {
   "works": "pass",
-  "fails": "fail",
+  "Spec b / inner suite / fails": "fail",
   "fails c": "fail",
   "fails in the subfolder sub": "fail",
   "finds the right channel by the filename end": "pass",

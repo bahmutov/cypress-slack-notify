@@ -54,12 +54,16 @@ async function postCypressSlackResult(
   const { channel, people } = getChannelAndPeople(notify)
   if (channel) {
     console.error('cypress-slack-notify: need to notify channel "%s"', channel)
+
+    // format Slack message using a version of Markdown
+    // https://api.slack.com/reference/surfaces/formatting
+
     let text = `🚨 ${failedN} Cypress ${getTestPluralForm(
       failedN,
     )} failed in spec *${spec.relative}*`
 
     failedTestTitles.forEach((failedTestTitle) => {
-      text += `\n- ${failedTestTitle}`
+      text += `\n • ${failedTestTitle}`
     })
 
     if (runInfo.runDashboardUrl) {

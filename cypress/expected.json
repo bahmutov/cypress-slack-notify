@@ -5,5 +5,9 @@
   "fails in the subfolder sub": "fail",
   "finds the right channel by the filename end": "pass",
   "finds the right channel by minimatch": "pass",
-  "has single target shortcut": "pass"
+  "has single target shortcut": "pass",
+  "parses channel name with usernames": "pass",
+  "parses channel name with usernames with spaces": "pass",
+  "ignores multiple spaces": "pass",
+  "does not care about casing": "pass"
 }

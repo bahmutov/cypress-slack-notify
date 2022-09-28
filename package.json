@@ -27,8 +27,8 @@
   },
   "homepage": "https://github.com/bahmutov/cypress-slack-notify#readme",
   "devDependencies": {
-    "cypress": "^10.8.0",
-    "cypress-expect": "^2.5.3",
+    "cypress": "10.8.0",
+    "cypress-expect": "2.5.3",
     "prettier": "^2.7.1",
     "semantic-release": "^19.0.5"
   },

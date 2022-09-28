@@ -33,7 +33,10 @@ function getChannelAndPeople(s) {
   if (typeof s !== 'string') {
     throw new Error(`expected a string, got "${s}"`)
   }
-  const parts = s.split(' ')
+  const parts = s
+    .split(/\s(?=@)/g)
+    .map((s) => s.trim())
+    .filter(Boolean)
   const channel = parts.find((s) => s.startsWith('#'))
   const people = parts.filter((s) => s.startsWith('@'))
   return { channel, people }

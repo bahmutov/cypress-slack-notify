@@ -23,6 +23,8 @@ const notifyWhen = {
   whenRecordingDashboardTag: ['notify'],
 }
 
+const registerCypressSlackNotify = require('.')
+
 module.exports = defineConfig({
   projectId: 'avzi1n',
   video: false,
@@ -31,7 +33,7 @@ module.exports = defineConfig({
     supportFile: false,
     fixturesFolder: false,
     setupNodeEvents(on, config) {
-      require('./src/index')(on, notificationConfiguration, notifyWhen)
+      registerCypressSlackNotify(on, notificationConfiguration, notifyWhen)
     },
   },
 })

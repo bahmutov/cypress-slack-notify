@@ -15,12 +15,14 @@ let usersStore
  * for the failed spec tests is configured.
  * @param { import("./types").NotificationConfiguration } notificationConfiguration
  * @param {Cypress.Spec} spec The current spec file object
+ * @param {string[]} failedTestTitles Test titles, each test a single string
  * @param {number} failedN Number of failed tests
  */
 async function postCypressSlackResult(
   notificationConfiguration,
   spec,
   failedN,
+  failedTestTitles,
   runInfo,
 ) {
   if (!process.env.SLACK_TOKEN) {
@@ -55,6 +57,11 @@ async function postCypressSlackResult(
     let text = `🚨 ${failedN} Cypress ${getTestPluralForm(
       failedN,
     )} failed in spec *${spec.relative}*`
+
+    failedTestTitles.forEach((failedTestTitle) => {
+      text += `\n- ${failedTestTitle}`
+    })
+
     if (runInfo.runDashboardUrl) {
       // since we deal with the failed specs
       // point the users to the failures right away
@@ -198,6 +205,12 @@ function registerCypressSlackNotify(
         // TODO handle both an unexpected error
         // and the specific number of failed tests
 
+        const failedTestTitles = results.tests
+          .filter((t) => t.state === 'failed')
+          .map((t) => t.title.join(' / '))
+        debug('failed test titles')
+        debug(failedTestTitles)
+
         // notify each Slack channel (there could be multiple registrations)
         for await (const c of allNotificationConfigurations) {
           const { notificationConfiguration, notifyConditions } = c
@@ -282,6 +295,7 @@ function registerCypressSlackNotify(
             notificationConfiguration,
             spec,
             results.stats.failures,
+            failedTestTitles,
             {
               runDashboardUrl,
               runDashboardTags,

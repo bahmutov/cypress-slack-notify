@@ -11,7 +11,7 @@ jobs:
         # https://github.com/cypress-io/github-action
         uses: cypress-io/github-action@v4
         with:
-          command: npx cypress-expect run --record --tag notify --expect-exactly cypress/expected.json
+          command: npx cypress-expect run --expect-exactly cypress/expected.json --record --tag notify
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}

@@ -152,11 +152,11 @@ async function postCypressSlackResult(
         spec.relative,
         channel,
       )
-      return { channel, people, sent: true }
+      return { channel, people, sent: true, ...runInfo }
     } else {
       console.error('could not post the test results to "%s"', channel)
       console.error(result)
-      return { channel, people, sent: false }
+      return { channel, people, sent: false, ...runInfo }
     }
   } else {
     console.error('no need to notify')

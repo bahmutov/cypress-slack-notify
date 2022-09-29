@@ -175,6 +175,17 @@ const defaultNotifyConditions = {
 const allNotificationConfigurations = []
 
 /**
+ * Check if potentially we might notify about a spec failure for this test run.
+ */
+function mayNotify(recording) {
+  return allNotificationConfigurations.some((c) => {
+    const { notifyConditions } = c
+    const notify = shouldNotify(notifyConditions, recording)
+    return notify
+  })
+}
+
+/**
  * Registers the cypres-slack-notify plugin. The plugin will send Slack messages
  * for each failed spec file based on the notification configuration object.
  * @param {Cypress.PluginEvents} on Pass the "on" argument to let the plugin listen to Cypress events
@@ -228,6 +239,15 @@ function registerCypressSlackNotify(
       runDashboardUrl,
       runDashboardTags,
     })
+
+    const notify = mayNotify({ runDashboardUrl, runDashboardTags })
+    if (notify) {
+      console.log(
+        'cypress-slack-notify: if a spec fails, will post a Slack message',
+      )
+    } else {
+      debug('no need to notify about the failure')
+    }
   })
 
   on('after:spec', async (spec, results) => {

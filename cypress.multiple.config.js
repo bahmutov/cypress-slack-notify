@@ -12,14 +12,28 @@ module.exports = defineConfig({
     fixturesFolder: false,
     setupNodeEvents(on, config) {
       // any recorded run tagged "sanity" should notify #cypress-slack-notify-multiple-sanity channel
-      registerSlackNotify(on, '#cypress-slack-notify-multiple-sanity', {
-        whenRecordingDashboardTag: ['sanity'],
-      })
+      registerSlackNotify(
+        on,
+        '#cypress-slack-notify-multiple-sanity',
+        {
+          whenRecordingDashboardTag: ['sanity'],
+        },
+        {
+          writeJson: true,
+        },
+      )
 
       // any recorded run tagged "user" should notify #cypress-slack-notify-multiple-user channel
-      registerSlackNotify(on, '#cypress-slack-notify-multiple-user', {
-        whenRecordingDashboardTag: ['user'],
-      })
+      registerSlackNotify(
+        on,
+        '#cypress-slack-notify-multiple-user',
+        {
+          whenRecordingDashboardTag: ['user'],
+        },
+        {
+          writeJson: true,
+        },
+      )
     },
   },
 })

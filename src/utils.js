@@ -42,4 +42,87 @@ function getChannelAndPeople(s) {
   return { channel, people }
 }
 
-module.exports = { findChannelToNotify, getChannelAndPeople }
+/**
+ * Returns true if this plugin should post a message for the given
+ * conditions and test run.
+ * @param { import("./types").NotifyConditions } notifyConditions
+ * @param { import("./types").RunInfo } recordingOptions
+ */
+function shouldNotify(notifyConditions, recordingOptions = {}) {
+  const { runDashboardUrl, runDashboardTags } = recordingOptions
+  const recordingOnDashboard = Boolean(runDashboardUrl)
+
+  if (typeof notifyConditions.whenISaySo === 'function') {
+    debug('using whenISaySo predicate function')
+    if (
+      !notifyConditions.whenISaySo({
+        runDashboardUrl,
+        runDashboardTags,
+      })
+    ) {
+      debug('whenISaySo returned false, skip notifications')
+      return false
+    }
+    return true
+  }
+
+  if (typeof notifyConditions.whenRecordingOnDashboard === 'boolean') {
+    debug(
+      'notifyConditions.whenRecordingOnDashboard',
+      notifyConditions.whenRecordingOnDashboard,
+    )
+
+    if (notifyConditions.whenRecordingOnDashboard === true) {
+      if (!recordingOnDashboard) {
+        debug('not recording on Cypress Dashboard, skip Slack notifications')
+        return false
+      }
+
+      if (typeof notifyConditions.whenRecordingDashboardTag === 'string') {
+        notifyConditions.whenRecordingDashboardTag = [
+          notifyConditions.whenRecordingDashboardTag,
+        ]
+      }
+
+      if (
+        Array.isArray(notifyConditions.whenRecordingDashboardTag) &&
+        notifyConditions.whenRecordingDashboardTag.length
+      ) {
+        if (!runDashboardTags || !runDashboardTags.length) {
+          debug(
+            'run does not have any tags, need %o to report',
+            notifyConditions.whenRecordingDashboardTag,
+          )
+          return false
+        }
+
+        debug('recorded run tags %o', runDashboardTags)
+        const hasMatchingTag = notifyConditions.whenRecordingDashboardTag.some(
+          (tag) => runDashboardTags.includes(tag),
+        )
+        if (!hasMatchingTag) {
+          debug(
+            'user does not need to Slack notify about tags %o, only %o',
+            runDashboardTags,
+            notifyConditions.whenRecordingDashboardTag,
+          )
+          return false
+        }
+      }
+    }
+
+    if (
+      notifyConditions.whenRecordingOnDashboard === false &&
+      recordingOnDashboard
+    ) {
+      debug(
+        'recording on Cypress Dashboard, but the user wants to skip Slack notifications',
+      )
+      return false
+    }
+
+    return true
+  }
+}
+
+module.exports = { findChannelToNotify, getChannelAndPeople, shouldNotify }

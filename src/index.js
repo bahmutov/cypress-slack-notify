@@ -21,6 +21,7 @@ function addJsonLog(record) {
   jsonLogRecords.push(record)
   const text = JSON.stringify(jsonLogRecords, null, 2)
   writeFileSync(JSON_LOG_FILENAME, text + '\n', 'utf8')
+  debug('added another record to json log %s', JSON_LOG_FILENAME)
 }
 
 // looking up user ids from user aliases

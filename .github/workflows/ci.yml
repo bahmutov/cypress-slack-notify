@@ -17,6 +17,9 @@ jobs:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
           DEBUG: cypress-slack-notify
 
+      - name: Print JSON log 🖨
+        run: cat cypress-slack-notified.json
+
   release:
     needs: [test]
     runs-on: ubuntu-20.04

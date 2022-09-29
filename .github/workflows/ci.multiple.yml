@@ -21,3 +21,6 @@ jobs:
 
       - name: Print JSON log 🖨
         run: cat cypress-slack-notified.json
+
+      - name: Check JSON log ✅
+        run: node ./test-logs/ci.multiple.js

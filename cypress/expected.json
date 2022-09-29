@@ -13,5 +13,11 @@
   "parses channel name with usernames": "pass",
   "parses channel name with usernames with spaces": "pass",
   "ignores multiple spaces": "pass",
-  "does not care about casing": "pass"
+  "does not care about casing": "pass",
+  "shouldNotify": {
+    "returns false without recording": "pass",
+    "returns true for recorded run with a matching tag": "pass",
+    "returns false for recorded run without a matching tag": "pass",
+    "returns true when I say so": "pass"
+  }
 }

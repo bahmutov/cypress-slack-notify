@@ -3,7 +3,11 @@
 
 const debug = require('debug')('cypress-slack-notify')
 const { WebClient } = require('@slack/web-api')
-const { findChannelToNotify, getChannelAndPeople } = require('./utils')
+const {
+  findChannelToNotify,
+  getChannelAndPeople,
+  shouldNotify,
+} = require('./utils')
 const { writeFileSync } = require('fs')
 
 const getTestPluralForm = (n) => (n === 1 ? 'test' : 'tests')
@@ -244,95 +248,26 @@ function registerCypressSlackNotify(
         for await (const c of allNotificationConfigurations) {
           const { notificationConfiguration, notifyConditions } = c
 
-          if (typeof notifyConditions.whenISaySo === 'function') {
-            debug('using whenISaySo predicate function')
-            if (
-              !notifyConditions.whenISaySo({
-                runDashboardUrl,
-                runDashboardTags,
-              })
-            ) {
-              debug('whenISaySo returned false, skip notifications')
-              return
+          const recording = {
+            runDashboardUrl,
+            runDashboardTags,
+          }
+          const notify = shouldNotify(notifyConditions, recording)
+          if (notify) {
+            debug('should notify about this failure')
+            const sentRecord = await postCypressSlackResult(
+              notificationConfiguration,
+              spec,
+              results.stats.failures,
+              failedTestTitles,
+              recording,
+            )
+            debug('after postCypressSlackResult')
+            if (sentRecord) {
+              addJsonLog(sentRecord)
             }
           } else {
-            if (
-              typeof notifyConditions.whenRecordingOnDashboard === 'boolean'
-            ) {
-              debug(
-                'notifyConditions.whenRecordingOnDashboard',
-                notifyConditions.whenRecordingOnDashboard,
-              )
-
-              if (notifyConditions.whenRecordingOnDashboard === true) {
-                if (!recordingOnDashboard) {
-                  debug(
-                    'not recording on Cypress Dashboard, skip Slack notifications',
-                  )
-                  return
-                }
-
-                if (
-                  typeof notifyConditions.whenRecordingDashboardTag === 'string'
-                ) {
-                  notifyConditions.whenRecordingDashboardTag = [
-                    notifyConditions.whenRecordingDashboardTag,
-                  ]
-                }
-
-                if (
-                  Array.isArray(notifyConditions.whenRecordingDashboardTag) &&
-                  notifyConditions.whenRecordingDashboardTag.length
-                ) {
-                  if (!runDashboardTags || !runDashboardTags.length) {
-                    debug(
-                      'run does not have any tags, need %o to report',
-                      notifyConditions.whenRecordingDashboardTag,
-                    )
-                    return
-                  }
-
-                  debug('recorded run tags %o', runDashboardTags)
-                  const hasMatchingTag =
-                    notifyConditions.whenRecordingDashboardTag.some((tag) =>
-                      runDashboardTags.includes(tag),
-                    )
-                  if (!hasMatchingTag) {
-                    debug(
-                      'user does not need to Slack notify about tags %o, only %o',
-                      runDashboardTags,
-                      notifyConditions.whenRecordingDashboardTag,
-                    )
-                    return
-                  }
-                }
-              }
-
-              if (
-                notifyConditions.whenRecordingOnDashboard === false &&
-                recordingOnDashboard
-              ) {
-                debug(
-                  'recording on Cypress Dashboard, but the user wants to skip Slack notifications',
-                )
-                return
-              }
-            }
-          }
-
-          const sentRecord = await postCypressSlackResult(
-            notificationConfiguration,
-            spec,
-            results.stats.failures,
-            failedTestTitles,
-            {
-              runDashboardUrl,
-              runDashboardTags,
-            },
-          )
-          debug('after postCypressSlackResult')
-          if (sentRecord) {
-            addJsonLog(sentRecord)
+            debug('should NOT notify about this failure')
           }
         }
       }

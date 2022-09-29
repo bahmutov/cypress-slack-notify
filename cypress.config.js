@@ -33,7 +33,9 @@ module.exports = defineConfig({
     supportFile: false,
     fixturesFolder: false,
     setupNodeEvents(on, config) {
-      registerCypressSlackNotify(on, notificationConfiguration, notifyWhen)
+      registerCypressSlackNotify(on, notificationConfiguration, notifyWhen, {
+        writeJson: true,
+      })
     },
   },
 })

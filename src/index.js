@@ -4,8 +4,25 @@
 const debug = require('debug')('cypress-slack-notify')
 const { WebClient } = require('@slack/web-api')
 const { findChannelToNotify, getChannelAndPeople } = require('./utils')
+const { writeFileSync } = require('fs')
 
 const getTestPluralForm = (n) => (n === 1 ? 'test' : 'tests')
+
+const JSON_LOG_FILENAME = './cypress-slack-notified.json'
+let jsonLogRecords = []
+
+function startJsonLog() {
+  writeFileSync(JSON_LOG_FILENAME, '[]\n', 'utf8')
+  jsonLogRecords = []
+  debug('started json log file %s', JSON_LOG_FILENAME)
+}
+
+function addJsonLog(record) {
+  jsonLogRecords.push(record)
+  const text = JSON.stringify(jsonLogRecords, null, 2)
+  writeFileSync(JSON_LOG_FILENAME, text + '\n', 'utf8')
+  debug('added another record to json log %s', JSON_LOG_FILENAME)
+}
 
 // looking up user ids from user aliases
 let usersStore
@@ -135,9 +152,11 @@ async function postCypressSlackResult(
         spec.relative,
         channel,
       )
+      return { channel, people, sent: true, ...runInfo }
     } else {
       console.error('could not post the test results to "%s"', channel)
       console.error(result)
+      return { channel, people, sent: false, ...runInfo }
     }
   } else {
     console.error('no need to notify')
@@ -157,11 +176,13 @@ const allNotificationConfigurations = []
  * @param {Cypress.PluginEvents} on Pass the "on" argument to let the plugin listen to Cypress events
  * @param { import("./types").NotificationConfiguration } notificationConfiguration
  * @param { import("./types").NotifyConditions } notifyConditions
+ * @param { import("./types").NotifyPluginOptions } options
  */
 function registerCypressSlackNotify(
   on,
   notificationConfiguration,
   notifyConditions,
+  options = {},
 ) {
   if (!notificationConfiguration) {
     throw new Error('Missing cypress-slack-notify notification configuration')
@@ -184,6 +205,10 @@ function registerCypressSlackNotify(
     notificationConfiguration,
     notifyConditions,
   })
+
+  if (options.writeJson) {
+    startJsonLog()
+  }
 
   // remember the Cypress dashboard run URL and tags if any
   let runDashboardTags
@@ -295,7 +320,7 @@ function registerCypressSlackNotify(
             }
           }
 
-          await postCypressSlackResult(
+          const sentRecord = await postCypressSlackResult(
             notificationConfiguration,
             spec,
             results.stats.failures,
@@ -306,6 +331,9 @@ function registerCypressSlackNotify(
             },
           )
           debug('after postCypressSlackResult')
+          if (sentRecord) {
+            addJsonLog(sentRecord)
+          }
         }
       }
     } catch (e) {

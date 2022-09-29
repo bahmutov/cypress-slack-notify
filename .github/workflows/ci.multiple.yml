@@ -18,3 +18,9 @@ jobs:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
           DEBUG: cypress-slack-notify
+
+      - name: Print JSON log 🖨
+        run: cat cypress-slack-notified.json
+
+      - name: Check JSON log ✅
+        run: node ./test-logs/ci.multiple.js

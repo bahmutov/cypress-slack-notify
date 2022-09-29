@@ -26,6 +26,13 @@ export type RunInfo = {
   runDashboardTags?: string[]
 }
 
+export type NotifyPluginOptions = {
+  /**
+   * The plugin will save a JSON file with all notifications sent
+   */
+  writeJson?: boolean
+}
+
 /**
  * Describes when the plugin should send the Slack notifications.
  * For example, the user might want to only notify when there is a Dashboard run,

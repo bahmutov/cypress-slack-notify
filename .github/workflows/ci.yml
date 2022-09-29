@@ -20,6 +20,9 @@ jobs:
       - name: Print JSON log 🖨
         run: cat cypress-slack-notified.json
 
+      - name: Check JSON log ✅
+        run: node ./test-logs/ci.js
+
   release:
     needs: [test]
     runs-on: ubuntu-20.04

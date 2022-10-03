@@ -11,18 +11,21 @@ const expectedLog = [
   {
     channel: '#cypress-slack-notify',
     people: ['@gleb.bahmutov'],
+    foundSlackUsers: ['@gleb.bahmutov'],
     sent: true,
     runDashboardTags: ['notify'],
   },
   {
     channel: '#cypress-slack-notify',
     people: [],
+    foundSlackUsers: [],
     sent: true,
     runDashboardTags: ['notify'],
   },
   {
     channel: '#cypress-slack-notify-minimatch',
     people: [],
+    foundSlackUsers: [],
     sent: true,
     runDashboardTags: ['notify'],
   },

@@ -14,7 +14,7 @@ module.exports = defineConfig({
       // any recorded run tagged "sanity" should notify #cypress-slack-notify-multiple-sanity channel
       registerSlackNotify(
         on,
-        '#cypress-slack-notify-multiple-sanity',
+        '#cypress-slack-notify-multiple-sanity @gleb.bahmutov',
         {
           whenRecordingDashboardTag: ['sanity'],
         },

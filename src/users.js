@@ -31,6 +31,9 @@ async function fetchSlackUsers() {
           if (u.name) {
             usersStore[u.name] = u.id
           }
+          if (u.profile && u.profile.display_name) {
+            usersStore[u.profile.display_name] = u.id
+          }
         })
         // see if there is a next page with users
         if (

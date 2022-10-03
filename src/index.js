@@ -8,6 +8,7 @@ const {
   getChannelAndPeople,
   shouldNotify,
 } = require('./utils')
+const { fetchSlackUsers } = require('./users')
 const { writeFileSync } = require('fs')
 
 const getTestPluralForm = (n) => (n === 1 ? 'test' : 'tests')
@@ -106,44 +107,11 @@ async function postCypressSlackResult(
 
     if (people && people.length) {
       if (!usersStore) {
-        usersStore = {}
-        try {
-          // we iterate through the users list page by page
-          // returned by the Slack API
-          let cursor
-          while (true) {
-            // https://api.slack.com/methods/users.list
-            const userResult = await web.users.list({ cursor })
-            if (userResult.members) {
-              debug('user list has %d members', userResult.members.length)
-              userResult.members.forEach((u) => {
-                if (u.name) {
-                  usersStore[u.name] = u.id
-                }
-              })
-              // see if there is a next page with users
-              if (
-                userResult.response_metadata &&
-                userResult.response_metadata.next_cursor
-              ) {
-                cursor = userResult.response_metadata.next_cursor
-              } else {
-                // otherwise stop fetching users, we are done
-                break
-              }
-            } else {
-              console.error('Slack user list has no members')
-            }
-          }
-          debug(
-            'finished fetching all Slack users, got %d usernames',
-            Object.keys(usersStore).length,
-          )
-        } catch (e) {
-          console.error('Could not fetch the users list')
-          console.error(
-            'Perhaps the app does not have "users:read" scope permission',
-          )
+        // only try fetching the Slack users once
+        usersStore = fetchSlackUsers()
+        if (!usersStore) {
+          debug('could not fetch Slack users')
+          usersStore = {}
         }
       }
       // https://api.slack.com/reference/surfaces/formatting#mentioning-users

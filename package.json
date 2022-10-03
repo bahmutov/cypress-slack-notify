@@ -3,7 +3,11 @@
   "version": "0.0.0-development",
   "description": "Post messages in Slack channels when specific Cypress tests and specs fail",
   "main": "src/index.js",
+  "bin": {
+    "cypress-slack-notify": "bin/cypress-slack-notify.js"
+  },
   "files": [
+    "bin",
     "src"
   ],
   "scripts": {
@@ -36,6 +40,7 @@
   },
   "dependencies": {
     "@slack/web-api": "^6.7.2",
+    "arg": "^5.0.2",
     "debug": "^4.3.4",
     "minimatch": "^5.1.0"
   }

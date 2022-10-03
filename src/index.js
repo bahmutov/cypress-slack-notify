@@ -105,10 +105,12 @@ async function postCypressSlackResult(
       debug('run info has no dashboard tags')
     }
 
+    const foundSlackUsers = []
+
     if (people && people.length) {
       if (!usersStore) {
         // only try fetching the Slack users once
-        usersStore = fetchSlackUsers()
+        usersStore = await fetchSlackUsers()
         if (!usersStore) {
           debug('could not fetch Slack users')
           usersStore = {}
@@ -116,15 +118,16 @@ async function postCypressSlackResult(
       }
       // https://api.slack.com/reference/surfaces/formatting#mentioning-users
       const userIds = people
-        .map((username) => {
+        .map((uname) => {
           // Slack keeps internal names without '@' symbol
-          if (username.startsWith('@')) {
-            username = username.substr(1)
-          }
+          const username = uname.startsWith('@') ? uname.slice(1) : uname
           const userId = usersStore[username]
           if (!userId) {
             console.error('Cannot find Slack user id for user "%s"', username)
+          } else {
+            foundSlackUsers.push(uname)
           }
+
           return userId
         })
         .filter(Boolean)
@@ -147,11 +150,11 @@ async function postCypressSlackResult(
         spec.relative,
         channel,
       )
-      return { channel, people, sent: true, ...runInfo }
+      return { channel, people, foundSlackUsers, sent: true, ...runInfo }
     } else {
       console.error('could not post the test results to "%s"', channel)
       console.error(result)
-      return { channel, people, sent: false, ...runInfo }
+      return { channel, people, foundSlackUsers, sent: false, ...runInfo }
     }
   } else {
     console.error('no need to notify')

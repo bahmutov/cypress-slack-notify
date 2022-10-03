@@ -8,7 +8,7 @@ const jsonLog = JSON.parse(ciJsonLog)
 const expectedLog = [
   {
     channel: '#cypress-slack-notify-multiple-sanity',
-    people: [],
+    people: ['@gleb.bahmutov'],
     sent: true,
     runDashboardTags: ['sanity'],
   },
@@ -20,7 +20,7 @@ const expectedLog = [
   },
   {
     channel: '#cypress-slack-notify-multiple-sanity',
-    people: [],
+    people: ['@gleb.bahmutov'],
     sent: true,
     runDashboardTags: ['sanity'],
   },

@@ -133,6 +133,15 @@ setupNodeEvents(on, config) {
 })
 ```
 
+## Find Slack user id
+
+To notify users in the message, this plugin needs to find Slack user ID from the username. You can see the found user by running the `cypress-slack-notify` bin alias
+
+```
+$ npx cypress-slack-notify --find-user @gleb
+found Slack user ID: U12345678
+```
+
 ## Debugging
 
 Enable verbose log messages by setting an environment variable `DEBUG=cypress-slack-notify`

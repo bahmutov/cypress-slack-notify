@@ -72,7 +72,9 @@ async function findSlackUsers(usernames) {
     return
   }
 
-  const ids = usernames.map((uname) => {
+  const normalizedUsernames = usernames.map((s) => s.trim()).filter(Boolean)
+
+  const ids = normalizedUsernames.map((uname) => {
     // the username should not include "@"
     const username = uname.startsWith('@') ? uname.slice(1) : uname
 

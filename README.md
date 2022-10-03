@@ -139,13 +139,21 @@ To notify users in the message, this plugin needs to find Slack user ID from the
 
 ```shell
 $ npx cypress-slack-notify --find-user @gleb
-found Slack user ID: U12345678
+found Slack user @gleb ID: U12345678
 # use Yarn to call the "bin/cypress-slack-notify.js" script
 # You can also skip the "@" at the start of the username
 $ yarn cypress-slack-notify --find-user gleb
 ```
 
 When searching the users, we consider both the property "name" and "profile.display_name" fields.
+
+You can pass multiple usernames separating them with a comma
+
+```shell
+$ npx cypress-slack-notify --find-user @gleb,slackbot
+found Slack user @gleb ID: U12345678
+...
+```
 
 ## Debugging
 

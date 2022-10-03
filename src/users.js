@@ -61,9 +61,9 @@ async function fetchSlackUsers() {
   return usersStore
 }
 
-async function findSlackUsers(username) {
-  if (!username) {
-    throw new Error('Missing Slack username')
+async function findSlackUsers(usernames) {
+  if (!Array.isArray(usernames)) {
+    throw new Error('Missing Slack usernames')
   }
 
   const users = await fetchSlackUsers()
@@ -72,14 +72,24 @@ async function findSlackUsers(username) {
     return
   }
 
-  // the username should not include "@"
-  if (username.startsWith('@')) {
-    username = username.slice(1)
-  }
+  const ids = usernames.map((uname) => {
+    // the username should not include "@"
+    const username = uname.startsWith('@') ? uname.slice(1) : uname
 
-  const id = users[username]
-  debug('Slack user "%s" id %s', username, id)
-  return id
+    const id = users[username]
+    debug('Slack user "%s" id %s', username, id)
+
+    if (id) {
+      console.log('found Slack %s user ID:', uname, id)
+    } else {
+      console.error('could not find Slack user', username)
+    }
+
+    return id
+  })
+
+  debug('returning found Slack ids %o', ids)
+  return ids
 }
 
 module.exports = { fetchSlackUsers, findSlackUsers }

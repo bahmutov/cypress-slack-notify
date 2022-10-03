@@ -82,7 +82,7 @@ async function findSlackUsers(usernames) {
     debug('Slack user "%s" id %s', username, id)
 
     if (id) {
-      console.log('found Slack %s user ID:', uname, id)
+      console.log('found Slack user %s ID:', uname, id)
     } else {
       console.error('could not find Slack user', username)
     }

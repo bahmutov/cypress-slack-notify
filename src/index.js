@@ -150,6 +150,9 @@ async function postCypressSlackResult(
         spec.relative,
         channel,
       )
+      if (foundSlackUsers.length) {
+        console.log('notifying %s', foundSlackUsers.join(', '))
+      }
       return { channel, people, foundSlackUsers, sent: true, ...runInfo }
     } else {
       console.error('could not post the test results to "%s"', channel)

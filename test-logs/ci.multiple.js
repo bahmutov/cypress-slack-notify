@@ -9,18 +9,21 @@ const expectedLog = [
   {
     channel: '#cypress-slack-notify-multiple-sanity',
     people: ['@gleb.bahmutov'],
+    foundSlackUsers: ['@gleb.bahmutov'],
     sent: true,
     runDashboardTags: ['sanity'],
   },
   {
     channel: '#cypress-slack-notify-multiple-sanity',
-    people: ['@gleb.bahmutov'],
+    people: [],
+    foundSlackUsers: [],
     sent: true,
     runDashboardTags: ['sanity'],
   },
   {
     channel: '#cypress-slack-notify-multiple-sanity',
-    people: ['@gleb.bahmutov'],
+    people: [],
+    foundSlackUsers: [],
     sent: true,
     runDashboardTags: ['sanity'],
   },

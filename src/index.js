@@ -276,7 +276,7 @@ function registerCypressSlackNotify(
               'should notify about this failure based on %o',
               notifyConditions,
             )
-            if (shouldNotifySpec(notifyConditions)) {
+            if (shouldNotifySpec(notificationConfiguration)) {
               debug('should notify by spec')
 
               const sentRecord = await postCypressSlackResult(

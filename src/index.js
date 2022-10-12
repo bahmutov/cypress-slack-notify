@@ -11,6 +11,7 @@ const {
 } = require('./utils')
 const { fetchSlackUsers } = require('./users')
 const { writeFileSync } = require('fs')
+const { findEffectiveTestTagsIn } = require('find-test-names')
 
 const getTestPluralForm = (n) => (n === 1 ? 'test' : 'tests')
 
@@ -32,6 +33,10 @@ function addJsonLog(record) {
 
 // looking up user ids from user aliases
 let usersStore
+
+// relative spec file to found effective test tags
+// https://github.com/bahmutov/find-test-names
+const specsTags = {}
 
 /**
  * Posts a Slack message to the specific channels if notification
@@ -294,11 +299,24 @@ function registerCypressSlackNotify(
                 'should notify about failed tests based on effective test tags',
               )
 
+              if (!specsTags[spec.relative]) {
+                specsTags[spec.relative] = findEffectiveTestTagsIn(
+                  spec.absolute,
+                )
+                debug(
+                  'found effective test tags in the spec "%s"',
+                  spec.relative,
+                )
+                debug(specsTags[spec.relative])
+              }
+
               // check we should notify about particular test failure
               // based on the effective test tags
               for await (const failedTest of failedTests) {
                 const fullTitle = failedTest.title.join(' ')
-                debug('checking the failed test: %s', fullTitle)
+                debug('checking the failed test tags "%s"', fullTitle)
+                const testTags = specsTags[spec.relative] || []
+                debug('test "%s" has effective tags %o', fullTitle, testTags)
               }
             }
           } else {

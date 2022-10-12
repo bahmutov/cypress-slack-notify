@@ -1,4 +1,4 @@
-name: ci-multiple
+name: ci-effective
 on: push
 jobs:
   test:

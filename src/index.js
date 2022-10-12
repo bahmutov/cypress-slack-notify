@@ -39,25 +39,14 @@ let usersStore
 const specsTags = {}
 
 /**
- * Posts a Slack message to the specific channels if notification
- * for the failed spec tests is configured.
- * @param { import("./types").NotificationConfiguration } notificationConfiguration
+ * Posts a Slack message based on the channel warning about the failed tests and specs.
+ * @param {string} notify Channel and usernames
  * @param {Cypress.Spec} spec The current spec file object
  * @param {CypressCommandLine.TestResult[]} failedTests Failed tests in this spec
  */
-async function postCypressSlackResult(
-  notificationConfiguration,
-  spec,
-  failedTests,
-  runInfo,
-) {
+async function notifySlackChannel(notify, spec, failedTests, runInfo) {
   if (!process.env.SLACK_TOKEN) {
     debug('no SLACK_TOKEN')
-    return
-  }
-
-  if (!failedTests || !failedTests.length) {
-    debug('no tests failed in spec %s', spec.relative)
     return
   }
 
@@ -68,14 +57,6 @@ async function postCypressSlackResult(
 
   // Initialize
   const web = new WebClient(token)
-
-  // note: you need to invite the app to each channel
-  // before it can post messages to that channel
-  const notify = findChannelToNotify(notificationConfiguration, spec)
-  if (!notify) {
-    debug('no notify for failed spec %s', spec.relative)
-    return
-  }
 
   const { channel, people } = getChannelAndPeople(notify)
   if (channel) {
@@ -167,6 +148,36 @@ async function postCypressSlackResult(
   } else {
     console.error('no need to notify')
   }
+}
+
+/**
+ * Posts a Slack message to the specific channels if notification
+ * for the failed spec tests is configured.
+ * @param { import("./types").NotificationConfiguration } notificationConfiguration
+ * @param {Cypress.Spec} spec The current spec file object
+ * @param {CypressCommandLine.TestResult[]} failedTests Failed tests in this spec
+ */
+async function postCypressSlackResult(
+  notificationConfiguration,
+  spec,
+  failedTests,
+  runInfo,
+) {
+  if (!failedTests || !failedTests.length) {
+    debug('no tests failed in spec %s', spec.relative)
+    return
+  }
+
+  // note: you need to invite the app to each channel
+  // before it can post messages to that channel
+  const notify = findChannelToNotify(notificationConfiguration, spec)
+  if (!notify) {
+    debug('no notify for failed spec %s', spec.relative)
+    return
+  }
+
+  const result = await notifySlackChannel(notify, spec, failedTests, runInfo)
+  return result
 }
 
 /** @type { import("./types").NotifyConditions } */
@@ -326,6 +337,13 @@ function registerCypressSlackNotify(
                       'should notify for tag %s room %s',
                       effectiveTag,
                       notifyForTag,
+                    )
+
+                    await notifySlackChannel(
+                      notifyForTag,
+                      spec,
+                      failedTests,
+                      recording,
                     )
                   }
                 }

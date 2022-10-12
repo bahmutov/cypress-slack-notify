@@ -44,7 +44,13 @@ const specsTags = {}
  * @param {Cypress.Spec} spec The current spec file object
  * @param {CypressCommandLine.TestResult[]} failedTests Failed tests in this spec
  */
-async function notifySlackChannel(notify, spec, failedTests, runInfo) {
+async function notifySlackChannel(
+  notify,
+  spec,
+  failedTests,
+  runInfo,
+  testTags,
+) {
   if (!process.env.SLACK_TOKEN) {
     debug('no SLACK_TOKEN')
     return
@@ -89,6 +95,13 @@ async function notifySlackChannel(notify, spec, failedTests, runInfo) {
       text += `\nRun tags: ${s}`
     } else {
       debug('run info has no dashboard tags')
+    }
+    if (Array.isArray(testTags) && testTags.length) {
+      debug('test has tags %o', testTags)
+      const s = testTags.map((tag) => '*' + tag + '*').join(', ')
+      text += `\nTest tags: ${s}`
+    } else {
+      debug('test has no tags')
     }
 
     const foundSlackUsers = []
@@ -176,7 +189,13 @@ async function postCypressSlackResult(
     return
   }
 
-  const result = await notifySlackChannel(notify, spec, failedTests, runInfo)
+  const result = await notifySlackChannel(
+    notify,
+    spec,
+    failedTests,
+    runInfo,
+    [],
+  )
   return result
 }
 
@@ -339,12 +358,16 @@ function registerCypressSlackNotify(
                       notifyForTag,
                     )
 
-                    await notifySlackChannel(
+                    const sentRecord = await notifySlackChannel(
                       notifyForTag,
                       spec,
                       failedTests,
                       recording,
+                      testTags,
                     )
+                    if (sentRecord) {
+                      addJsonLog(sentRecord)
+                    }
                   }
                 }
               }

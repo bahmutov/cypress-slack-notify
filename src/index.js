@@ -65,7 +65,7 @@ async function postCypressSlackResult(
 
   // note: you need to invite the app to each channel
   // before it can post messages to that channel
-  const notify = findChannelToNotify(notificationConfiguration, spec.relative)
+  const notify = findChannelToNotify(notificationConfiguration, spec)
   if (!notify) {
     debug('no notify for failed spec %s', spec.relative)
     return

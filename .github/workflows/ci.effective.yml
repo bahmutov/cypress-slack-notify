@@ -22,5 +22,6 @@ jobs:
       - name: Print JSON log 🖨
         run: cat cypress-slack-notified.json
 
-      - name: Check JSON log ✅
-        run: node ./test-logs/ci.effective.js
+      # TODO: enable to check the implementation
+      # - name: Check JSON log ✅
+      #   run: node ./test-logs/ci.effective.js

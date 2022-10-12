@@ -5,11 +5,9 @@ const minimatch = require('minimatch')
 
 /**
  * @param { import("./types").NotificationConfiguration } notificationConfiguration
+ * @param { Cypress.Spec } failedSpec
  */
-function findChannelToNotify(
-  notificationConfiguration,
-  failedSpecRelativeFilename,
-) {
+function findChannelToNotify(notificationConfiguration, failedSpec) {
   if (typeof notificationConfiguration === 'string') {
     debug(
       'notification config is the single target "%s"',
@@ -30,6 +28,7 @@ function findChannelToNotify(
     return
   }
 
+  const failedSpecRelativeFilename = failedSpec.relative
   const spec = Object.keys(notificationConfiguration).find((ch) => {
     return (
       failedSpecRelativeFilename.endsWith(ch) ||

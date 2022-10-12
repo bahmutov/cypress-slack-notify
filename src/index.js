@@ -7,6 +7,7 @@ const {
   findChannelToNotify,
   getChannelAndPeople,
   shouldNotify,
+  shouldNotifySpec,
 } = require('./utils')
 const { fetchSlackUsers } = require('./users')
 const { writeFileSync } = require('fs')
@@ -272,27 +273,31 @@ function registerCypressSlackNotify(
           const notify = shouldNotify(notifyConditions, recording)
           if (notify) {
             debug('should notify about this failure')
-            const sentRecord = await postCypressSlackResult(
-              notificationConfiguration,
-              spec,
-              failedTests,
-              recording,
-            )
-            debug('after postCypressSlackResult')
-            if (sentRecord) {
-              addJsonLog(sentRecord)
+            if (shouldNotifySpec(notifyConditions)) {
+              const sentRecord = await postCypressSlackResult(
+                notificationConfiguration,
+                spec,
+                failedTests,
+                recording,
+              )
+              debug('after postCypressSlackResult')
+              if (sentRecord) {
+                addJsonLog(sentRecord)
+              }
+            } else {
+              debug(
+                'should notify about failed tests based on effective test tags',
+              )
+
+              // check we should notify about particular test failure
+              // based on the effective test tags
+              for await (const failedTest of failedTests) {
+                const fullTitle = failedTest.title.join(' ')
+                debug('checking the failed test: %s', fullTitle)
+              }
             }
           } else {
-            debug(
-              'should NOT notify about this spec failure, checking individual tests',
-            )
-
-            // check we should notify about particular test failure
-            // based on the effective test tags
-            for await (const failedTest of failedTests) {
-              const fullTitle = failedTest.title.join(' ')
-              debug('checking the failed test: %s', fullTitle)
-            }
+            debug('should NOT notify about this failure')
           }
         }
       }

@@ -315,8 +315,20 @@ function registerCypressSlackNotify(
               for await (const failedTest of failedTests) {
                 const fullTitle = failedTest.title.join(' ')
                 debug('checking the failed test tags "%s"', fullTitle)
-                const testTags = specsTags[spec.relative] || []
+                const testTags = specsTags[spec.relative][fullTitle] || []
                 debug('test "%s" has effective tags %o', fullTitle, testTags)
+
+                for await (const effectiveTag of testTags) {
+                  const notifyForTag =
+                    notificationConfiguration.testTags[effectiveTag]
+                  if (notifyForTag) {
+                    debug(
+                      'should notify for tag %s room %s',
+                      effectiveTag,
+                      notifyForTag,
+                    )
+                  }
+                }
               }
             }
           } else {

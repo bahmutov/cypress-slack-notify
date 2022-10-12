@@ -92,7 +92,7 @@ async function notifySlackChannel(
       const s = runInfo.runDashboardTags
         .map((tag) => '*' + tag + '*')
         .join(', ')
-      text += `\nRun tags: ${s}`
+      text += `\nDashboard run tags: ${s}`
     } else {
       debug('run info has no dashboard tags')
     }

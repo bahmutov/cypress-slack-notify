@@ -110,6 +110,36 @@ setupNodeEvents(on, config) {
 })
 ```
 
+## Effective test tags
+
+If you use [cypress-grep]() plugin to tag suites or individual tests, you can direct the messages based on the effective test tags.
+
+```js
+// cypress.config.js
+// https://github.com/bahmutov/cypress-slack-notify
+const registerSlackNotify = require('cypress-slack-notify')
+
+setupNodeEvents(on, config) {
+  // any recorded run tagged "sanity" should notify #sanity-tests channel
+  // on each failed spec
+  registerSlackNotify(on,
+    {
+      testTags: {
+        // list each tag and the Slack target
+        '@auth': '#cypress-slack-notify-effective-tags @gleb',
+      },
+      // only send notifications when recording
+      // on Cypress Dashboard with the tag "user"
+      {
+        whenRecordingDashboardTag: ['user'],
+      }
+    }
+  )
+}
+```
+
+See [cypress.effective.config.js](./cypress.effective.config.js)
+
 ## Multiple registrations
 
 You can register this plugin multiple times and direct messages based on the recorded Dashboard tags.

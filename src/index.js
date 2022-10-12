@@ -272,8 +272,13 @@ function registerCypressSlackNotify(
           // check if we should notify about the test based on the spec
           const notify = shouldNotify(notifyConditions, recording)
           if (notify) {
-            debug('should notify about this failure')
+            debug(
+              'should notify about this failure based on %o',
+              notifyConditions,
+            )
             if (shouldNotifySpec(notifyConditions)) {
+              debug('should notify by spec')
+
               const sentRecord = await postCypressSlackResult(
                 notificationConfiguration,
                 spec,

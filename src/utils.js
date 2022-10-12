@@ -3,6 +3,9 @@
 const debug = require('debug')('cypress-slack-notify')
 const minimatch = require('minimatch')
 
+/**
+ * @param { import("./types").NotificationConfiguration } notificationConfiguration
+ */
 function findChannelToNotify(
   notificationConfiguration,
   failedSpecRelativeFilename,
@@ -13,6 +16,18 @@ function findChannelToNotify(
       notificationConfiguration,
     )
     return notificationConfiguration
+  }
+
+  if (
+    typeof notificationConfiguration === 'object' &&
+    'testTags' in notificationConfiguration
+  ) {
+    debug(
+      'finding notification by effective test tags %o',
+      notificationConfiguration.testTags,
+    )
+    // TODO: implement
+    return
   }
 
   const spec = Object.keys(notificationConfiguration).find((ch) => {

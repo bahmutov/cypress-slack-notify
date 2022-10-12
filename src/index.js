@@ -37,14 +37,12 @@ let usersStore
  * for the failed spec tests is configured.
  * @param { import("./types").NotificationConfiguration } notificationConfiguration
  * @param {Cypress.Spec} spec The current spec file object
- * @param {string[]} failedTestTitles Test titles, each test a single string
- * @param {number} failedN Number of failed tests
+ * @param {CypressCommandLine.TestResult[]} failedTests Failed tests in this spec
  */
 async function postCypressSlackResult(
   notificationConfiguration,
   spec,
-  failedN,
-  failedTestTitles,
+  failedTests,
   runInfo,
 ) {
   if (!process.env.SLACK_TOKEN) {
@@ -52,7 +50,7 @@ async function postCypressSlackResult(
     return
   }
 
-  if (!failedN) {
+  if (!failedTests || !failedTests.length) {
     debug('no tests failed in spec %s', spec.relative)
     return
   }
@@ -79,11 +77,12 @@ async function postCypressSlackResult(
 
     // format Slack message using a version of Markdown
     // https://api.slack.com/reference/surfaces/formatting
-
+    const failedN = failedTests.length
     let text = `🚨 ${failedN} Cypress ${getTestPluralForm(
       failedN,
     )} failed in spec *${spec.relative}*`
 
+    const failedTestTitles = failedTests.map((t) => t.title.join(' / '))
     failedTestTitles.forEach((failedTestTitle) => {
       text += `\n • ${failedTestTitle}`
     })
@@ -276,8 +275,7 @@ function registerCypressSlackNotify(
             const sentRecord = await postCypressSlackResult(
               notificationConfiguration,
               spec,
-              results.stats.failures,
-              failedTestTitles,
+              failedTests,
               recording,
             )
             debug('after postCypressSlackResult')

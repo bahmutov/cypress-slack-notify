@@ -112,7 +112,14 @@ setupNodeEvents(on, config) {
 
 ## Effective test tags
 
-If you use [cypress-grep]() plugin to tag suites or individual tests, you can direct the messages based on the effective test tags.
+If you use [cypress-grep](https://glebbahmutov.com/blog/cypress-grep-filters/) plugin to tag suites or individual tests, you can direct the messages based on the effective test tags.
+
+```js
+describe('Login tests', { tags: ['@auth'] }, () => {
+  // a failing spec with effective tag "@auth
+  it('fails', () => ... )
+})
+```
 
 ```js
 // cypress.config.js

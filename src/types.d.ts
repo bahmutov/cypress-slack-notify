@@ -20,6 +20,12 @@ export type NotificationConfiguration =
       [string]: SlackNotificationTarget
     }
   | SlackNotificationTarget
+  | {
+      testTags: {
+        // effective test tag: channel target
+        [string]: SlackNotificationTarget
+      }
+    }
 
 export type RunInfo = {
   runDashboardUrl?: string

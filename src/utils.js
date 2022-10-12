@@ -5,9 +5,16 @@ const minimatch = require('minimatch')
 
 /**
  * @param { import("./types").NotificationConfiguration } notificationConfiguration
- * @param { Cypress.Spec } failedSpec
+ * @param { Cypress.Spec | string } failedSpec
  */
 function findChannelToNotify(notificationConfiguration, failedSpec) {
+  if (typeof failedSpec === 'string') {
+    failedSpec = {
+      relative: failedSpec,
+      absolute: failedSpec,
+      name: failedSpec,
+    }
+  }
   if (typeof notificationConfiguration === 'string') {
     debug(
       'notification config is the single target "%s"',

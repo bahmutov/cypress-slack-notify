@@ -147,6 +147,28 @@ setupNodeEvents(on, config) {
 
 See [cypress.effective.config.js](./cypress.effective.config.js)
 
+**Tip:** you can define the test tags to Slack targets in a JSON file and load it using a `require` command. For example, if the JSON file below is used `notify.json` we can do:
+
+```json
+{
+  "@auth": "#auth-tests @gleb",
+  "@sell": "#sell-tests @gleb"
+}
+```
+
+```js
+registerSlackNotify(on,
+    {
+      testTags: require('./notify.json'),
+      // only send notifications when recording
+      // on Cypress Dashboard with the tag "nightly"
+      {
+        whenRecordingDashboardTag: ['nightly'],
+      }
+    }
+  )
+```
+
 ## Multiple registrations
 
 You can register this plugin multiple times and direct messages based on the recorded Dashboard tags.

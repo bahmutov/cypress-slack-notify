@@ -255,9 +255,8 @@ function registerCypressSlackNotify(
         // TODO handle both an unexpected error
         // and the specific number of failed tests
 
-        const failedTestTitles = results.tests
-          .filter((t) => t.state === 'failed')
-          .map((t) => t.title.join(' / '))
+        const failedTests = results.tests.filter((t) => t.state === 'failed')
+        const failedTestTitles = failedTests.map((t) => t.title.join(' / '))
         debug('failed test titles')
         debug(failedTestTitles)
 
@@ -269,6 +268,8 @@ function registerCypressSlackNotify(
             runDashboardUrl,
             runDashboardTags,
           }
+
+          // check if we should notify about the test based on the spec
           const notify = shouldNotify(notifyConditions, recording)
           if (notify) {
             debug('should notify about this failure')
@@ -284,7 +285,16 @@ function registerCypressSlackNotify(
               addJsonLog(sentRecord)
             }
           } else {
-            debug('should NOT notify about this failure')
+            debug(
+              'should NOT notify about this spec failure, checking individual tests',
+            )
+
+            // check we should notify about particular test failure
+            // based on the effective test tags
+            for await (const failedTest of failedTests) {
+              const fullTitle = failedTest.title.join(' ')
+              debug('checking the failed test: %s', fullTitle)
+            }
           }
         }
       }

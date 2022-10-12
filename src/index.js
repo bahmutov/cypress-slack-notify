@@ -7,9 +7,11 @@ const {
   findChannelToNotify,
   getChannelAndPeople,
   shouldNotify,
+  shouldNotifySpec,
 } = require('./utils')
 const { fetchSlackUsers } = require('./users')
 const { writeFileSync } = require('fs')
+const { findEffectiveTestTagsIn } = require('find-test-names')
 
 const getTestPluralForm = (n) => (n === 1 ? 'test' : 'tests')
 
@@ -32,26 +34,25 @@ function addJsonLog(record) {
 // looking up user ids from user aliases
 let usersStore
 
+// relative spec file to found effective test tags
+// https://github.com/bahmutov/find-test-names
+const specsTags = {}
+
 /**
- * Posts a Slack message to the specific channels if notification
- * for the failed spec tests is configured.
- * @param { import("./types").NotificationConfiguration } notificationConfiguration
+ * Posts a Slack message based on the channel warning about the failed tests and specs.
+ * @param {string} notify Channel and usernames
  * @param {Cypress.Spec} spec The current spec file object
  * @param {CypressCommandLine.TestResult[]} failedTests Failed tests in this spec
  */
-async function postCypressSlackResult(
-  notificationConfiguration,
+async function notifySlackChannel(
+  notify,
   spec,
   failedTests,
   runInfo,
+  testTags,
 ) {
   if (!process.env.SLACK_TOKEN) {
     debug('no SLACK_TOKEN')
-    return
-  }
-
-  if (!failedTests || !failedTests.length) {
-    debug('no tests failed in spec %s', spec.relative)
     return
   }
 
@@ -62,14 +63,6 @@ async function postCypressSlackResult(
 
   // Initialize
   const web = new WebClient(token)
-
-  // note: you need to invite the app to each channel
-  // before it can post messages to that channel
-  const notify = findChannelToNotify(notificationConfiguration, spec)
-  if (!notify) {
-    debug('no notify for failed spec %s', spec.relative)
-    return
-  }
 
   const { channel, people } = getChannelAndPeople(notify)
   if (channel) {
@@ -99,9 +92,16 @@ async function postCypressSlackResult(
       const s = runInfo.runDashboardTags
         .map((tag) => '*' + tag + '*')
         .join(', ')
-      text += `\nRun tags: ${s}`
+      text += `\nDashboard run tags: ${s}`
     } else {
       debug('run info has no dashboard tags')
+    }
+    if (Array.isArray(testTags) && testTags.length) {
+      debug('test has tags %o', testTags)
+      const s = testTags.map((tag) => '*' + tag + '*').join(', ')
+      text += `\nTest tags: ${s}`
+    } else {
+      debug('test has no tags')
     }
 
     const foundSlackUsers = []
@@ -161,6 +161,42 @@ async function postCypressSlackResult(
   } else {
     console.error('no need to notify')
   }
+}
+
+/**
+ * Posts a Slack message to the specific channels if notification
+ * for the failed spec tests is configured.
+ * @param { import("./types").NotificationConfiguration } notificationConfiguration
+ * @param {Cypress.Spec} spec The current spec file object
+ * @param {CypressCommandLine.TestResult[]} failedTests Failed tests in this spec
+ */
+async function postCypressSlackResult(
+  notificationConfiguration,
+  spec,
+  failedTests,
+  runInfo,
+) {
+  if (!failedTests || !failedTests.length) {
+    debug('no tests failed in spec %s', spec.relative)
+    return
+  }
+
+  // note: you need to invite the app to each channel
+  // before it can post messages to that channel
+  const notify = findChannelToNotify(notificationConfiguration, spec)
+  if (!notify) {
+    debug('no notify for failed spec %s', spec.relative)
+    return
+  }
+
+  const result = await notifySlackChannel(
+    notify,
+    spec,
+    failedTests,
+    runInfo,
+    [],
+  )
+  return result
 }
 
 /** @type { import("./types").NotifyConditions } */
@@ -271,28 +307,73 @@ function registerCypressSlackNotify(
           // check if we should notify about the test based on the spec
           const notify = shouldNotify(notifyConditions, recording)
           if (notify) {
-            debug('should notify about this failure')
-            const sentRecord = await postCypressSlackResult(
-              notificationConfiguration,
-              spec,
-              failedTests,
-              recording,
+            debug(
+              'should notify about this failure based on %o',
+              notifyConditions,
             )
-            debug('after postCypressSlackResult')
-            if (sentRecord) {
-              addJsonLog(sentRecord)
+            if (shouldNotifySpec(notificationConfiguration)) {
+              debug('should notify by spec')
+
+              const sentRecord = await postCypressSlackResult(
+                notificationConfiguration,
+                spec,
+                failedTests,
+                recording,
+              )
+              debug('after postCypressSlackResult')
+              if (sentRecord) {
+                addJsonLog(sentRecord)
+              }
+            } else {
+              debug(
+                'should notify about failed tests based on effective test tags',
+              )
+
+              if (!specsTags[spec.relative]) {
+                specsTags[spec.relative] = findEffectiveTestTagsIn(
+                  spec.absolute,
+                )
+                debug(
+                  'found effective test tags in the spec "%s"',
+                  spec.relative,
+                )
+                debug(specsTags[spec.relative])
+              }
+
+              // check we should notify about particular test failure
+              // based on the effective test tags
+              for await (const failedTest of failedTests) {
+                const fullTitle = failedTest.title.join(' ')
+                debug('checking the failed test tags "%s"', fullTitle)
+                const testTags = specsTags[spec.relative][fullTitle] || []
+                debug('test "%s" has effective tags %o', fullTitle, testTags)
+
+                for await (const effectiveTag of testTags) {
+                  const notifyForTag =
+                    notificationConfiguration.testTags[effectiveTag]
+                  if (notifyForTag) {
+                    debug(
+                      'should notify for tag %s room %s',
+                      effectiveTag,
+                      notifyForTag,
+                    )
+
+                    const sentRecord = await notifySlackChannel(
+                      notifyForTag,
+                      spec,
+                      failedTests,
+                      recording,
+                      testTags,
+                    )
+                    if (sentRecord) {
+                      addJsonLog(sentRecord)
+                    }
+                  }
+                }
+              }
             }
           } else {
-            debug(
-              'should NOT notify about this spec failure, checking individual tests',
-            )
-
-            // check we should notify about particular test failure
-            // based on the effective test tags
-            for await (const failedTest of failedTests) {
-              const fullTitle = failedTest.title.join(' ')
-              debug('checking the failed test: %s', fullTitle)
-            }
+            debug('should NOT notify about this failure')
           }
         }
       }

@@ -1,7 +1,22 @@
+/// <reference types="cypress" />
 // @ts-check
 
 const debug = require('debug')('cypress-slack-notify')
 const minimatch = require('minimatch')
+
+/**
+ * @param { import("./types").NotificationConfiguration } notificationConfiguration
+ */
+function shouldNotifySpec(notificationConfiguration) {
+  if (
+    typeof notificationConfiguration === 'object' &&
+    'testTags' in notificationConfiguration
+  ) {
+    return false
+  }
+
+  return true
+}
 
 /**
  * @param { import("./types").NotificationConfiguration } notificationConfiguration
@@ -146,4 +161,9 @@ function shouldNotify(notifyConditions, recordingOptions = {}) {
   }
 }
 
-module.exports = { findChannelToNotify, getChannelAndPeople, shouldNotify }
+module.exports = {
+  findChannelToNotify,
+  getChannelAndPeople,
+  shouldNotify,
+  shouldNotifySpec,
+}

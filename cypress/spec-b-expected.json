@@ -1,0 +1,7 @@
+{
+  "Spec b": {
+    "inner suite": {
+      "fails": "fail"
+    }
+  }
+}

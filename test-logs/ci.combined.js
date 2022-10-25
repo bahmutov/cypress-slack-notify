@@ -6,12 +6,21 @@ const ciJsonLog = readFileSync(logFilename, 'utf-8')
 const jsonLog = JSON.parse(ciJsonLog)
 
 const expectedLog = [
+  // first notification based on the effective test tag
   {
     channel: '#cypress-slack-notify-effective-tags',
     people: ['@gleb.bahmutov'],
     foundSlackUsers: ['@gleb.bahmutov'],
     sent: true,
-    runDashboardTags: ['effective', 'sanity'],
+    runDashboardTags: ['sanity', 'effective'],
+  },
+  // second notification based on the Dashboard run tag
+  {
+    channel: '#cypress-slack-notify-multiple-sanity',
+    people: ['@gleb.bahmutov'],
+    foundSlackUsers: ['@gleb.bahmutov'],
+    sent: true,
+    runDashboardTags: ['sanity', 'effective'],
   },
 ]
 

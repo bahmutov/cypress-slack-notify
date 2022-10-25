@@ -298,6 +298,10 @@ function registerCypressSlackNotify(
         debug(failedTestTitles)
 
         // notify each Slack channel (there could be multiple registrations)
+        debug(
+          'there are %d registrations',
+          allNotificationConfigurations.length,
+        )
         for await (const c of allNotificationConfigurations) {
           const { notificationConfiguration, notifyConditions } = c
 
@@ -378,6 +382,8 @@ function registerCypressSlackNotify(
             debug('should NOT notify about this failure')
           }
         }
+      } else {
+        debug('there are no failures in spec %o', spec)
       }
     } catch (e) {
       console.error('problem after spec')

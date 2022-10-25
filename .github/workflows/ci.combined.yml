@@ -13,7 +13,8 @@ jobs:
         with:
           command: |
             npx cypress-expect run --config-file cypress.combined.config.js \
-              --record --tag sanity --expect-exactly cypress/expected.json
+              --spec cypress/e2e/spec-b.cy.js \
+              --record --tag sanity,effective --expect-exactly cypress/expected.json
         env:
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}

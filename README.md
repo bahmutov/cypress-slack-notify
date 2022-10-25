@@ -157,16 +157,17 @@ See [cypress.effective.config.js](./cypress.effective.config.js)
 ```
 
 ```js
-registerSlackNotify(on,
-    {
-      testTags: require('./notify.json'),
-      // only send notifications when recording
-      // on Cypress Dashboard with the tag "nightly"
-      {
-        whenRecordingDashboardTag: ['nightly'],
-      }
-    }
-  )
+registerSlackNotify(
+  on,
+  {
+    testTags: require('./notify.json'),
+  },
+  // only send notifications when recording
+  // on Cypress Dashboard with the tag "nightly"
+  {
+    whenRecordingDashboardTag: ['nightly'],
+  },
+)
 ```
 
 ## Multiple registrations

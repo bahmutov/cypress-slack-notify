@@ -1,0 +1,27 @@
+name: ci-combined
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout 🛎
+        uses: actions/checkout@v3
+
+      - name: Run Cypress tests 🧪
+        # https://github.com/cypress-io/github-action
+        uses: cypress-io/github-action@v4
+        with:
+          command: |
+            npx cypress-expect run --config-file cypress.combined.config.js \
+              --spec cypress/e2e/spec-b.cy.js \
+              --record --tag sanity,effective --expect-exactly cypress/spec-b-expected.json
+        env:
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          DEBUG: cypress-slack-notify
+
+      - name: Print JSON log 🖨
+        run: cat cypress-slack-notified.json
+
+      - name: Check JSON log ✅
+        run: node ./test-logs/ci.combined.js

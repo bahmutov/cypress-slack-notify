@@ -283,6 +283,8 @@ function registerCypressSlackNotify(
   })
 
   on('after:spec', async (spec, results) => {
+    debug('after:spec for spec %o', spec)
+
     try {
       // error - unexpected crash, the tests could not run
       if (results.error || results.stats.failures) {

@@ -5,7 +5,7 @@ const { WebClient } = require('@slack/web-api')
 
 async function fetchSlackUsers() {
   if (!process.env.SLACK_TOKEN) {
-    debug('no SLACK_TOKEN')
+    console.error('cypress-slack-notify: missing SLACK_TOKEN')
     return
   }
 

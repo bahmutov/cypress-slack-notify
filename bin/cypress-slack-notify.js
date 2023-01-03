@@ -4,11 +4,13 @@
 
 const debug = require('debug')('cypress-slack-notify')
 const arg = require('arg')
-const { findSlackUsers } = require('../src/users')
+const { findSlackUsers, findSlackUser } = require('../src/users')
 
 const args = arg({
   // pass one or multiple usernames
   '--find-user': String,
+  // fetches information about a single user by its Slack ID
+  '--find-user-by-slack-id': String,
 })
 debug('args %o', args)
 
@@ -18,4 +20,6 @@ if (args['--find-user']) {
     console.log('finding %d user(s) %s', usernames.length, usernames.join(', '))
     findSlackUsers(usernames)
   }
+} else if (args['--find-user-by-slack-id']) {
+  findSlackUser(args['--find-user-by-slack-id'])
 }

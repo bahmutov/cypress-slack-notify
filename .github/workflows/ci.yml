@@ -23,8 +23,14 @@ jobs:
       - name: Check JSON log ✅
         run: node ./test-logs/ci.js
 
-      - name: Find the user by username 🔎
+      - name: Find the user by Slack username 🔎
         run: node ./bin/cypress-slack-notify.js --find-user @gleb.bahmutov
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          DEBUG: cypress-slack-notify
+
+      - name: Find the user by Slack ID 🔎
+        run: node ./bin/cypress-slack-notify.js --find-user-by-slack-id U034G2NF7GU
         env:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
           DEBUG: cypress-slack-notify

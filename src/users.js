@@ -3,7 +3,7 @@
 const debug = require('debug')('cypress-slack-notify')
 const { WebClient } = require('@slack/web-api')
 
-async function fetchSlackUsers() {
+function getSlackClient() {
   if (!process.env.SLACK_TOKEN) {
     console.error('cypress-slack-notify: missing SLACK_TOKEN')
     return
@@ -16,6 +16,14 @@ async function fetchSlackUsers() {
 
   // Initialize
   const web = new WebClient(token)
+  return web
+}
+
+async function fetchSlackUsers() {
+  const web = getSlackClient()
+  if (!web) {
+    return
+  }
 
   const usersStore = {}
   try {
@@ -28,6 +36,7 @@ async function fetchSlackUsers() {
       if (userResult.members) {
         debug('user list has %d members', userResult.members.length)
         userResult.members.forEach((u) => {
+          debug(u)
           if (u.name) {
             usersStore[u.name] = u.id
           }
@@ -94,4 +103,44 @@ async function findSlackUsers(usernames) {
   return ids
 }
 
-module.exports = { fetchSlackUsers, findSlackUsers }
+/**
+ * Fetches the user profile for a single user by its Slack user ID
+ */
+async function findSlackUser(userId) {
+  if (typeof userId !== 'string') {
+    throw new Error('Missing Slack user id')
+  }
+  if (!userId.startsWith('U')) {
+    console.error(
+      'Slack user id should start with the letter U, got "%s"',
+      userId,
+    )
+    throw new Error('Invalid Slack user id')
+  }
+
+  const web = getSlackClient()
+  if (!web) {
+    return
+  }
+
+  const response = await web.users.info({ user: userId })
+
+  if (!response.ok) {
+    console.error('Could not find the user with Slack ID %s', userId)
+    return
+  }
+  if (!response.user) {
+    console.error('Could not find the user object with Slack ID %s', userId)
+    return
+  }
+  if (!response.user.profile) {
+    console.error('Could not find the user profile with Slack ID %s', userId)
+    return
+  }
+  const profile = response.user.profile
+  console.log('Slack user id: %s', userId)
+  console.log('Slack user display name: %s', profile.display_name)
+  console.log('Slack user real name: %s', profile.real_name)
+}
+
+module.exports = { fetchSlackUsers, findSlackUsers, findSlackUser }

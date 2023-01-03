@@ -215,6 +215,14 @@ found Slack user @gleb ID: U12345678
 ...
 ```
 
+## Find a single Slack user by its Slack ID
+
+```shell
+$ npx cypress-slack-notify --find-user-by-slack-id U12345678
+```
+
+Prints the user's display and real name if found.
+
 ## Debugging
 
 Enable verbose log messages by setting an environment variable `DEBUG=cypress-slack-notify`

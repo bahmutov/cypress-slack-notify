@@ -41,11 +41,18 @@ async function fetchSlackUsers() {
         debug('user list has %d members', userResult.members.length)
         userResult.members.forEach((u) => {
           debug(u)
+          // Slack user can have 3 different names :)
+          // so cache all of them to be able to find the same Slack ID
           if (u.name) {
             usersStore[u.name] = u.id
           }
-          if (u.profile && u.profile.display_name) {
-            usersStore[u.profile.display_name] = u.id
+          if (u.profile) {
+            if (u.profile.display_name) {
+              usersStore[u.profile.display_name] = u.id
+            }
+            if (u.profile.real_name) {
+              usersStore[u.profile.real_name] = u.id
+            }
           }
         })
         // see if there is a next page with users
@@ -66,6 +73,7 @@ async function fetchSlackUsers() {
       'finished fetching all Slack users, got %d usernames',
       Object.keys(usersStore).length,
     )
+    // debug(Object.keys(usersStore))
   } catch (e) {
     console.error('Could not fetch the users list')
     console.error('Perhaps the app does not have "users:read" scope permission')
@@ -148,6 +156,7 @@ async function findSlackUser(userId) {
   }
   const profile = response.user.profile
   console.log('Slack user id: %s', userId)
+  console.log('Slack user top-level name: %s', response.user.name)
   console.log('Slack user display name: %s', profile.display_name)
   console.log('Slack user real name: %s', profile.real_name)
 }

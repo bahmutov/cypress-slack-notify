@@ -19,6 +19,10 @@ function getSlackClient() {
   return web
 }
 
+function isSlackUserId(s) {
+  return typeof s === 'string' && s.startsWith('U')
+}
+
 async function fetchSlackUsers() {
   const web = getSlackClient()
   if (!web) {
@@ -84,8 +88,13 @@ async function findSlackUsers(usernames) {
   const normalizedUsernames = usernames.map((s) => s.trim()).filter(Boolean)
 
   const ids = normalizedUsernames.map((uname) => {
-    // the username should not include "@"
+    // the username should not start "@"
     const username = uname.startsWith('@') ? uname.slice(1) : uname
+
+    if (isSlackUserId(username)) {
+      console.log('already is a Slack user ID %s', username)
+      return username
+    }
 
     const id = users[username]
     debug('Slack user "%s" id %s', username, id)

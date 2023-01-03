@@ -215,6 +215,14 @@ found Slack user @gleb ID: U12345678
 ...
 ```
 
+If you pass Slack user IDs (they start with `U`), they will simply be returned
+
+```shell
+$ npx cypress-slack-notify --find-user @U12345678
+already is a Slack user ID U12345678
+...
+```
+
 ## Find a single Slack user by its Slack ID
 
 ```shell

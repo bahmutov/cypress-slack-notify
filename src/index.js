@@ -10,6 +10,7 @@ const {
   shouldNotifySpec,
 } = require('./utils')
 const { fetchSlackUsers } = require('./users')
+const { postSlackMessage } = require('./slack-utils')
 const { writeFileSync } = require('fs')
 const { findEffectiveTestTagsIn } = require('find-test-names')
 
@@ -51,18 +52,13 @@ async function notifySlackChannel(
   runInfo,
   testTags,
 ) {
+  // Read a token from the environment variables
+  // To get a token, read https://slack.dev/node-slack-sdk/getting-started
+  // added a "bot token scope" "chat:write", "users:read"
   if (!process.env.SLACK_TOKEN) {
     debug('no SLACK_TOKEN')
     return
   }
-
-  // Read a token from the environment variables
-  // To get a token, read https://slack.dev/node-slack-sdk/getting-started
-  // added a "bot token scope" "chat:write", "users:read"
-  const token = process.env.SLACK_TOKEN
-
-  // Initialize
-  const web = new WebClient(token)
 
   const { channel, people } = getChannelAndPeople(notify)
   if (channel) {
@@ -139,10 +135,7 @@ async function notifySlackChannel(
     debug('posting Slack message to %s for spec %s', channel, spec.relative)
     debug(text)
 
-    const result = await web.chat.postMessage({
-      text,
-      channel,
-    })
+    const result = await postSlackMessage(channel, text)
     if (result.ok) {
       console.log(
         'cypress-slack-notify posted spec %s message to channel "%s"',

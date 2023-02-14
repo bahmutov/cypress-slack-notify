@@ -35,6 +35,12 @@ jobs:
           SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
           DEBUG: cypress-slack-notify
 
+      - name: Post Slack test message 🔎
+        run: node ./bin/cypress-slack-notify.js --test-channel '#cypress-slack-notify'
+        env:
+          SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+          DEBUG: cypress-slack-notify
+
   release:
     needs: [test]
     runs-on: ubuntu-20.04

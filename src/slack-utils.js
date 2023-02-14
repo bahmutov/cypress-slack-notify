@@ -20,7 +20,7 @@ async function postSlackMessage(channel, text) {
     text,
     channel,
   })
-  debug('post message to %s result %b', channel, result.ok)
+  debug('post message to %s result %o', channel, result.ok)
 
   return result
 }

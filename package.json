@@ -14,7 +14,8 @@
     "test": "cypress run",
     "badges": "npx -p dependency-version-badge update-badge cypress",
     "semantic-release": "semantic-release",
-    "multiple": "cypress run --config-file cypress.multiple.config.js"
+    "multiple": "cypress run --config-file cypress.multiple.config.js",
+    "test-channel": "node ./bin/cypress-slack-notify --test-channel '#cypress-slack-notify'"
   },
   "repository": {
     "type": "git",

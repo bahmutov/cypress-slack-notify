@@ -11,6 +11,8 @@ const args = arg({
   '--find-user': String,
   // fetches information about a single user by its Slack ID
   '--find-user-by-slack-id': String,
+  // posts a test message to the given channel
+  '--test-channel': String,
 })
 debug('args %o', args)
 
@@ -22,4 +24,11 @@ if (args['--find-user']) {
   }
 } else if (args['--find-user-by-slack-id']) {
   findSlackUser(args['--find-user-by-slack-id'])
+} else if (args['--test-channel']) {
+  console.log(
+    'posting a test message to the channel "%s"',
+    args['--test-channel'],
+  )
+} else {
+  console.error('hmm, not sure what to do, exiting...')
 }

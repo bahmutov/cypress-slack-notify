@@ -241,6 +241,26 @@ $ npx cypress-slack-notify --find-user-by-slack-id U12345678
 
 Prints the user's display and real name if found.
 
+## Options
+
+You can also create a json file with all the notifications sent or specify your own custom message, that will be added to the slack message at the end.
+ 
+```js
+const options = {
+  /**
+   * The plugin will save a JSON file with all notifications sent
+   */
+  writeJson?: boolean,
+  /**
+   * Add a custom message to the created slack message
+   */
+  customMessage?: string
+}
+
+// pass along the options with the other parameters
+require('cypress-slack-notify')(on, notificationConfiguration, notifyWhen, options)
+```
+
 ## Debugging
 
 Enable verbose log messages by setting an environment variable `DEBUG=cypress-slack-notify`

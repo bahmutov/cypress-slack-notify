@@ -51,6 +51,7 @@ async function notifySlackChannel(
   failedTests,
   runInfo,
   testTags,
+  customMessage
 ) {
   // Read a token from the environment variables
   // To get a token, read https://slack.dev/node-slack-sdk/getting-started
@@ -132,6 +133,12 @@ async function notifySlackChannel(
       }
     }
 
+    if (customMessage) {
+      text += `\n${customMessage}`
+    } else {
+      debug('no custom message added')
+    }
+
     debug('posting Slack message to %s for spec %s', channel, spec.relative)
     debug(text)
 
@@ -168,6 +175,7 @@ async function postCypressSlackResult(
   spec,
   failedTests,
   runInfo,
+  customMessage
 ) {
   if (!failedTests || !failedTests.length) {
     debug('no tests failed in spec %s', spec.relative)
@@ -188,6 +196,7 @@ async function postCypressSlackResult(
     failedTests,
     runInfo,
     [],
+    customMessage
   )
   return result
 }
@@ -318,6 +327,7 @@ function registerCypressSlackNotify(
                 spec,
                 failedTests,
                 recording,
+                options.customMessage
               )
               debug('after postCypressSlackResult')
               if (sentRecord) {
@@ -363,6 +373,7 @@ function registerCypressSlackNotify(
                       failedTests,
                       recording,
                       testTags,
+                      options.customMessage
                     )
                     if (sentRecord) {
                       addJsonLog(sentRecord)

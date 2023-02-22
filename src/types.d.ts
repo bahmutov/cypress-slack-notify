@@ -17,15 +17,15 @@ type SlackNotificationTarget = string
  */
 export type NotificationConfiguration =
   | {
-      [string]: SlackNotificationTarget
-    }
+    [string]: SlackNotificationTarget
+  }
   | SlackNotificationTarget
   | {
-      testTags: {
-        // effective test tag: channel target
-        [string]: SlackNotificationTarget
-      }
+    testTags: {
+      // effective test tag: channel target
+      [string]: SlackNotificationTarget
     }
+  }
 
 export type RunInfo = {
   runDashboardUrl?: string
@@ -36,7 +36,11 @@ export type NotifyPluginOptions = {
   /**
    * The plugin will save a JSON file with all notifications sent
    */
-  writeJson?: boolean
+  writeJson?: boolean,
+  /**
+   * Add a custom message to the created slack message
+   */
+  customMessage?: string
 }
 
 /**

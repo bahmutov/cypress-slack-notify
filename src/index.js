@@ -152,11 +152,11 @@ async function notifySlackChannel(
       if (foundSlackUsers.length) {
         console.log('notifying %s', foundSlackUsers.join(', '))
       }
-      return { channel, people, foundSlackUsers, sent: true, ...runInfo }
+      return { channel, people, foundSlackUsers, sent: true, customMessage, ...runInfo }
     } else {
       console.error('could not post the test results to "%s"', channel)
       console.error(result)
-      return { channel, people, foundSlackUsers, sent: false, ...runInfo }
+      return { channel, people, foundSlackUsers, sent: false, customMessage, ...runInfo }
     }
   } else {
     console.error('no need to notify')

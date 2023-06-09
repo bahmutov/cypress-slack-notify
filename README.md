@@ -1,4 +1,4 @@
-# cypress-slack-notify ![cypress version](https://img.shields.io/badge/cypress-12.13.0-brightgreen) [![cypress-slack-notify](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/avzi1n/main&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/avzi1n/runs) [![ci](https://github.com/bahmutov/cypress-slack-notify/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/bahmutov/cypress-slack-notify/actions/workflows/ci.yml)
+# cypress-slack-notify ![cypress version](https://img.shields.io/badge/cypress-12.14.0-brightgreen) [![cypress-slack-notify](https://img.shields.io/endpoint?url=https://dashboard.cypress.io/badge/simple/avzi1n/main&style=flat&logo=cypress)](https://dashboard.cypress.io/projects/avzi1n/runs) [![ci](https://github.com/bahmutov/cypress-slack-notify/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/bahmutov/cypress-slack-notify/actions/workflows/ci.yml)
 
 > Post messages in Slack channels when specific Cypress tests and specs fail
 

@@ -40,10 +40,10 @@
     "spok": "^1.5.5"
   },
   "dependencies": {
-    "@slack/web-api": "^6.7.2",
+    "@slack/web-api": "^7.11.0",
     "arg": "^5.0.2",
     "debug": "^4.3.4",
-    "find-test-names": "^1.21.0",
-    "minimatch": "^5.1.0"
+    "find-test-names": "^1.29.19",
+    "minimatch": "^10.0.3"
   }
 }

@@ -344,8 +344,15 @@ function registerCypressSlackNotify(
               for await (const failedTest of failedTests) {
                 const fullTitle = failedTest.title.join(' ')
                 debug('checking the failed test tags "%s"', fullTitle)
-                const testTags = specsTags[spec.relative][fullTitle] || []
+                const testTags =
+                  specsTags[spec.relative][fullTitle]?.effectiveTags || []
                 debug('test "%s" has effective tags %o', fullTitle, testTags)
+
+                if (!Array.isArray(testTags)) {
+                  throw new Error(
+                    `Expected a list of test tags for the test '${fullTitle}'`,
+                  )
+                }
 
                 for await (const effectiveTag of testTags) {
                   const notifyForTag =

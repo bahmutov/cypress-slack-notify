@@ -33,17 +33,17 @@
   "homepage": "https://github.com/bahmutov/cypress-slack-notify#readme",
   "devDependencies": {
     "chai": "^4.3.6",
-    "cypress": "12.17.4",
+    "cypress": "15.4.0",
     "cypress-expect": "2.5.3",
-    "prettier": "^2.7.1",
-    "semantic-release": "^19.0.5",
-    "spok": "^1.4.3"
+    "prettier": "3.6.2",
+    "semantic-release": "24.2.9",
+    "spok": "^1.5.5"
   },
   "dependencies": {
-    "@slack/web-api": "^6.7.2",
+    "@slack/web-api": "^7.11.0",
     "arg": "^5.0.2",
     "debug": "^4.3.4",
-    "find-test-names": "^1.21.0",
+    "find-test-names": "1.21.0",
     "minimatch": "^5.1.0"
   }
 }

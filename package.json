@@ -33,7 +33,7 @@
   "homepage": "https://github.com/bahmutov/cypress-slack-notify#readme",
   "devDependencies": {
     "chai": "^4.3.6",
-    "cypress": "15.4.0",
+    "cypress": "15.5.0",
     "cypress-expect": "2.5.3",
     "prettier": "3.6.2",
     "semantic-release": "24.2.9",

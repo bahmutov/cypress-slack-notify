@@ -34,7 +34,7 @@
   "devDependencies": {
     "chai": "^4.3.6",
     "cypress": "15.11.0",
-    "cypress-expect": "2.5.3",
+    "cypress-expect": "3.1.6",
     "prettier": "3.6.2",
     "semantic-release": "24.2.9",
     "spok": "^1.5.5"

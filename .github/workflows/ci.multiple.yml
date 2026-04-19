@@ -9,7 +9,7 @@ jobs:
 
       - name: Run Cypress tests 🧪
         # https://github.com/cypress-io/github-action
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         with:
           command: |
             npx cypress-expect run --config-file cypress.multiple.config.js \

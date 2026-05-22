@@ -51,6 +51,7 @@ async function notifySlackChannel(
   failedTests,
   runInfo,
   testTags,
+  customMessage
 ) {
   // Read a token from the environment variables
   // To get a token, read https://slack.dev/node-slack-sdk/getting-started
@@ -132,6 +133,12 @@ async function notifySlackChannel(
       }
     }
 
+    if (customMessage) {
+      text += `\n${customMessage}`
+    } else {
+      debug('no custom message added')
+    }
+
     debug('posting Slack message to %s for spec %s', channel, spec.relative)
     debug(text)
 
@@ -145,11 +152,11 @@ async function notifySlackChannel(
       if (foundSlackUsers.length) {
         console.log('notifying %s', foundSlackUsers.join(', '))
       }
-      return { channel, people, foundSlackUsers, sent: true, ...runInfo }
+      return { channel, people, foundSlackUsers, sent: true, customMessage, ...runInfo }
     } else {
       console.error('could not post the test results to "%s"', channel)
       console.error(result)
-      return { channel, people, foundSlackUsers, sent: false, ...runInfo }
+      return { channel, people, foundSlackUsers, sent: false, customMessage, ...runInfo }
     }
   } else {
     console.error('no need to notify')
@@ -168,6 +175,7 @@ async function postCypressSlackResult(
   spec,
   failedTests,
   runInfo,
+  customMessage
 ) {
   if (!failedTests || !failedTests.length) {
     debug('no tests failed in spec %s', spec.relative)
@@ -188,6 +196,7 @@ async function postCypressSlackResult(
     failedTests,
     runInfo,
     [],
+    customMessage
   )
   return result
 }
@@ -318,6 +327,7 @@ function registerCypressSlackNotify(
                 spec,
                 failedTests,
                 recording,
+                options.customMessage
               )
               debug('after postCypressSlackResult')
               if (sentRecord) {
@@ -370,6 +380,7 @@ function registerCypressSlackNotify(
                       failedTests,
                       recording,
                       testTags,
+                      options.customMessage
                     )
                     if (sentRecord) {
                       addJsonLog(sentRecord)
